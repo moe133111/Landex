@@ -133,7 +133,9 @@ export default function Home() {
         e.currentTarget.reset();
       } else {
         setStatusType("error");
-        setStatusMessage("Es ist ein Fehler beim Senden der Nachricht aufgetreten.");
+        setStatusMessage(
+          "Es ist ein Fehler beim Senden der Nachricht aufgetreten."
+        );
       }
     } catch (error) {
       console.error(error);
@@ -145,392 +147,662 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-slate-950 text-slate-50">
-      {/* Hintergrund-Effekte */}
-      <div className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.16),_transparent_55%)]" />
-        <div className="absolute left-1/2 top-1/3 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-sky-500/5 blur-3xl" />
+    <main className="relative min-h-screen bg-slate-100 text-slate-900 overflow-hidden">
+      {/* Globales, dezentes Raster im Hintergrund */}
+      <div className="page-bg">
+        <div className="page-bg-grid" />
       </div>
 
-      {/* Subtiles Raster */}
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(to_right,rgba(15,23,42,0.55)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.55)_1px,transparent_1px)] bg-[size:72px_72px]" />
+      {/* Globale Styles für Hintergrund & section-basierte Blobs */}
+      <style jsx global>{`
+        .page-bg {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
 
-      {/* Hero */}
-      <section className="relative px-4 py-12 sm:py-16 lg:py-20">
-        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
-          {/* Text-Spalte */}
-          <Reveal>
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/40 bg-sky-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Landing Pages für lokale Unternehmen
-              </div>
+        .page-bg-grid {
+          position: absolute;
+          inset: 0;
+          background-image: linear-gradient(
+              to right,
+              rgba(148, 163, 184, 0.06) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              to bottom,
+              rgba(148, 163, 184, 0.06) 1px,
+              transparent 1px
+            );
+          background-size: 72px 72px;
+        }
 
-              <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-                Wir bauen Landing Pages,{" "}
-                <span className="bg-gradient-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent">
-                  die aus Besuchern Kunden machen.
-                </span>
-              </h1>
+        .section-blob-wrapper {
+          position: absolute;
+          top: -80px;
+          bottom: -80px;
+          left: 50%;
+          width: 110vw;
+          transform: translateX(-50%);
+          pointer-events: none;
+          overflow: visible;
+          z-index: 0;
+          /* weiches Ausfaden nach oben/unten, aber weniger dominant */
+          -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(0, 0, 0, 0.85) 10%,
+            rgba(0, 0, 0, 1) 50%,
+            rgba(0, 0, 0, 0.85) 90%,
+            transparent 100%
+          );
+          mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(0, 0, 0, 0.85) 10%,
+            rgba(0, 0, 0, 1) 50%,
+            rgba(0, 0, 0, 0.85) 90%,
+            transparent 100%
+          );
+        }
 
-              <p className="mt-6 max-w-xl text-balance text-base text-slate-200/80 sm:text-lg">
-                Kein Baukasten, keine Spielerei. Wir planen und gestalten
-                zielgerichtete Landing Pages, die genau das tun, was sie sollen:
-                Anfragen, Termine oder Verkäufe für Ihr Unternehmen erzeugen.
-              </p>
+        .section-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(18px);
+          opacity: 1;
+          will-change: transform, border-radius;
+        }
 
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  href="#kontakt"
-                  className="group rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-400/40 transition hover:bg-sky-300"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Unverbindliches Erstgespräch anfragen
-                    <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      ↗
-                    </span>
-                  </span>
-                </Link>
-                <Link
-                  href="#wie-wir-arbeiten"
-                  className="text-sm font-medium text-slate-100/80 underline-offset-4 hover:underline"
-                >
-                  Wie wir arbeiten
-                </Link>
-              </div>
+        /* Hero-Blobs */
+        .section-blob--hero-1 {
+          width: 360px;
+          height: 360px;
+          top: -140px;
+          left: -90px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(56, 189, 248, 0.95),
+            transparent 65%
+          );
+          animation: blob1 14s ease-in-out infinite;
+        }
 
-              <div className="mt-8 flex flex-wrap gap-4 text-xs text-slate-300/80 sm:text-sm">
-                <div className="flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  <span>Fokus auf kleine & lokale Unternehmen</span>
-                </div>
-                <div className="flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  <span>Direkte persönliche Abstimmung statt Baukasten</span>
-                </div>
-              </div>
-            </div>
-          </Reveal>
+        .section-blob--hero-2 {
+          width: 420px;
+          height: 420px;
+          top: 45%;
+          right: -160px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(59, 130, 246, 0.9),
+            transparent 65%
+          );
+          animation: blob2 16s ease-in-out infinite;
+        }
 
-          {/* Rechte Spalte: Ergebnis-Übersicht */}
-          <Reveal delay={0.1}>
-            <div className="flex-1">
-              <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-slate-800/80 bg-slate-900/80 p-6 shadow-2xl shadow-sky-950/70 backdrop-blur-sm">
-                {/* dezente Umrandung */}
-                <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-sky-500/20 via-transparent to-blue-500/20 blur-xl" />
+        /* Vorteile / Branchen-Bereich */
+        .section-blob--mid-1 {
+          width: 380px;
+          height: 380px;
+          top: -120px;
+          right: -140px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(129, 140, 248, 0.9),
+            transparent 65%
+          );
+          animation: blob3 15s ease-in-out infinite;
+        }
 
-                <div className="mb-4 flex items-center justify-between gap-4">
-                  <h2 className="text-sm font-semibold text-slate-50 sm:text-base">
-                    Was eine gute Landing Page bewirken kann
-                  </h2>
-                  <span className="rounded-full bg-slate-900/80 px-3 py-1 text-[0.7rem] text-slate-300">
-                    Beispiele aus echten Projekten
-                  </span>
-                </div>
+        .section-blob--mid-2 {
+          width: 320px;
+          height: 320px;
+          bottom: -120px;
+          left: 10%;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(52, 211, 153, 0.95),
+            transparent 65%
+          );
+          animation: blob1 17s ease-in-out infinite;
+        }
 
-                <p className="text-xs text-slate-300/85 sm:text-sm">
-                  Jede Branche hat andere Ziele – aber das Prinzip ist immer
-                  gleich: ein klares Angebot, ein roter Faden und ein eindeutiger
-                  nächster Schritt.
-                </p>
+        /* Prozess / FAQ-Bereich */
+        .section-blob--lower-1 {
+          width: 360px;
+          height: 360px;
+          top: -100px;
+          left: 20%;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(56, 189, 248, 0.9),
+            transparent 65%
+          );
+          animation: blob2 17s ease-in-out infinite;
+        }
 
-                {/* überarbeitete Stats-Karten: Inhalt vertikal angeordnet */}
-                <div className="mt-5 space-y-3">
-                  {heroStats.map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3"
-                    >
-                      <p className="text-xs font-semibold text-slate-100 sm:text-sm">
-                        {item.label}
-                      </p>
-                      <p className="mt-1 text-[0.7rem] text-slate-400 sm:text-xs">
-                        {item.goal}
-                      </p>
-                      <p className="mt-2 text-xs font-semibold text-emerald-400 sm:text-sm">
-                        {item.result}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+        .section-blob--lower-2 {
+          width: 380px;
+          height: 380px;
+          bottom: -140px;
+          right: -120px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(59, 130, 246, 0.9),
+            transparent 65%
+          );
+          animation: blob3 16s ease-in-out infinite;
+        }
 
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-900 px-4 py-3 text-[0.75rem] sm:text-sm">
-                  <span className="text-slate-300">
-                    Sie bringen das Fachwissen mit, wir sorgen dafür, dass es
-                    online verstanden wird.
-                  </span>
-                  <span className="rounded-full border border-sky-400/60 px-3 py-1 text-[0.7rem] text-sky-200">
-                    Ideal für ein klares Hauptangebot
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+        /* Kontakt-Bereich */
+        .section-blob--contact-1 {
+          width: 360px;
+          height: 360px;
+          top: -120px;
+          right: -80px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(59, 130, 246, 0.95),
+            transparent 65%
+          );
+          animation: blob1 15s ease-in-out infinite;
+        }
 
-      {/* Vorteile */}
-      <section className="px-4 py-10 sm:py-14" id="vorteile">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Was eine gute Landing Page für kleine Unternehmen leisten
-                  muss.
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm text-slate-200/80 sm:text-base">
-                  Eine gute Landing Page ist kein „schönes Plakat“, sondern ein
-                  klares System: verständliche Botschaft, logischer Aufbau,
-                  Vertrauen und ein eindeutiges nächstes Schrittangebot.
-                </p>
-              </div>
-              <div className="text-xs text-slate-300/80 sm:text-sm">
-                <p>Wir kombinieren Gestaltung, Text und Struktur,</p>
-                <p>damit Interessenten nicht nur schauen, sondern handeln.</p>
-              </div>
-            </div>
-          </Reveal>
+        .section-blob--contact-2 {
+          width: 320px;
+          height: 320px;
+          bottom: -120px;
+          left: 25%;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(52, 211, 153, 0.95),
+            transparent 65%
+          );
+          animation: blob2 18s ease-in-out infinite;
+        }
 
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {features.map((feature, index) => (
-              <Reveal key={feature.title} delay={0.05 * index} y={30}>
-                <div className="group flex h-full flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:-translate-y-1 hover:border-sky-500/60 hover:bg-slate-900">
-                  <h3 className="text-sm font-semibold text-slate-50 sm:text-base">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-slate-300/85">
-                    {feature.description}
-                  </p>
-                  <span className="mt-2 text-xs text-sky-300 opacity-0 transition group-hover:opacity-100">
-                    Fokus: klare nächste Schritte statt „schöner“ Startseite.
-                  </span>
-                </div>
-              </Reveal>
-            ))}
+        /* Stärkere Bewegung + Formveränderung */
+        @keyframes blob1 {
+          0% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+          25% {
+            transform: translate3d(70px, -50px, 0) scale(1.12) rotate(6deg);
+            border-radius: 60% 40% 55% 45% / 55% 45% 60% 40%;
+          }
+          50% {
+            transform: translate3d(-45px, 25px, 0) scale(0.96) rotate(-4deg);
+            border-radius: 48% 52% 60% 40% / 40% 60% 45% 55%;
+          }
+          75% {
+            transform: translate3d(30px, 40px, 0) scale(1.08) rotate(3deg);
+            border-radius: 55% 45% 48% 52% / 52% 48% 60% 40%;
+          }
+          100% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+        }
+
+        @keyframes blob2 {
+          0% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+          25% {
+            transform: translate3d(-80px, 40px, 0) scale(1.1) rotate(-5deg);
+            border-radius: 65% 35% 55% 45% / 45% 55% 60% 40%;
+          }
+          50% {
+            transform: translate3d(40px, -60px, 0) scale(0.95) rotate(4deg);
+            border-radius: 45% 55% 65% 35% / 55% 45% 40% 60%;
+          }
+          75% {
+            transform: translate3d(-50px, 20px, 0) scale(1.08) rotate(-3deg);
+            border-radius: 58% 42% 48% 52% / 48% 52% 62% 38%;
+          }
+          100% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+        }
+
+        @keyframes blob3 {
+          0% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+          25% {
+            transform: translate3d(60px, -35px, 0) scale(1.13) rotate(8deg);
+            border-radius: 62% 38% 52% 48% / 50% 50% 65% 35%;
+          }
+          50% {
+            transform: translate3d(-55px, 50px, 0) scale(0.94) rotate(-6deg);
+            border-radius: 42% 58% 60% 40% / 60% 40% 45% 55%;
+          }
+          75% {
+            transform: translate3d(35px, 20px, 0) scale(1.09) rotate(3deg);
+            border-radius: 55% 45% 48% 52% / 52% 48% 58% 42%;
+          }
+          100% {
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+          }
+        }
+      `}</style>
+
+      {/* Inhaltsebene über dem Hintergrund */}
+      <div className="relative z-10">
+        {/* Hero */}
+        <section className="relative px-4 py-12 sm:py-16 lg:py-20">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--hero-1" />
+            <div className="section-blob section-blob--hero-2" />
           </div>
-        </div>
-      </section>
 
-      {/* Branchen */}
-      <section className="px-4 py-10 sm:py-14" id="branchen">
-        <div className="mx-auto max-w-6xl rounded-3xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
             <Reveal>
-              <div className="max-w-md">
-                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Speziell für lokale und kleine Unternehmen.
-                </h2>
-                <p className="mt-3 text-sm text-slate-200/80 sm:text-base">
-                  Wir sprechen nicht in Marketing-Fachbegriffen, sondern in
-                  klaren Worten: Was bringen Ihnen mehr Besucher, wenn keine
-                  Anfragen entstehen? Genau hier setzt eine gute Landing Page
-                  an.
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 rounded-full border border-sky-400 bg-sky-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-800">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Landing Pages für lokale Unternehmen
+                </div>
+
+                <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                  Wir bauen Landing Pages,{" "}
+                  <span className="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
+                    die aus Besuchern Kunden machen.
+                  </span>
+                </h1>
+
+                <p className="mt-6 max-w-xl text-balance text-base text-slate-800 sm:text-lg">
+                  Kein Baukasten, keine Spielerei. Wir planen und gestalten
+                  zielgerichtete Landing Pages, die genau das tun, was sie
+                  sollen: Anfragen, Termine oder Verkäufe für Ihr Unternehmen
+                  erzeugen.
                 </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <Link
+                    href="#kontakt"
+                    className="group rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:bg-sky-500"
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      Unverbindliches Erstgespräch anfragen
+                      <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                        ↗
+                      </span>
+                    </span>
+                  </Link>
+                  <Link
+                    href="#wie-wir-arbeiten"
+                    className="text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
+                  >
+                    Wie wir arbeiten
+                  </Link>
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-4 text-xs text-slate-800 sm:text-sm">
+                  <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span>Fokus auf kleine & lokale Unternehmen</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span>Direkte persönliche Abstimmung statt Baukasten</span>
+                  </div>
+                </div>
               </div>
             </Reveal>
-            <div className="mt-2 grid flex-1 grid-cols-1 gap-2 text-sm text-slate-200/90 sm:grid-cols-2">
-              {industries.map((item, index) => (
-                <Reveal key={item} delay={0.03 * index} y={18}>
-                  <div className="flex items-center gap-2 rounded-xl bg-slate-900/80 px-3 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                    <span>{item}</span>
+
+            <Reveal delay={0.1}>
+              <div className="flex-1">
+                <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-2xl shadow-sky-300/70 backdrop-blur-sm">
+                  <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-sky-200/70 via-transparent to-blue-300/70 blur-xl" />
+
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <h2 className="text-sm font-semibold text-slate-900 sm:text-base">
+                      Was eine gute Landing Page bewirken kann
+                    </h2>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-[0.7rem] text-slate-700">
+                      Beispiele aus echten Projekten
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-700 sm:text-sm">
+                    Jede Branche hat andere Ziele – aber das Prinzip ist immer
+                    gleich: ein klares Angebot, ein roter Faden und ein
+                    eindeutiger nächster Schritt.
+                  </p>
+
+                  <div className="mt-5 space-y-3">
+                    {heroStats.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm"
+                      >
+                        <p className="text-xs font-semibold text-slate-900 sm:text-sm">
+                          {item.label}
+                        </p>
+                        <p className="mt-1 text-[0.7rem] text-slate-700 sm:text-xs">
+                          {item.goal}
+                        </p>
+                        <p className="mt-2 text-xs font-semibold text-emerald-600 sm:text-sm">
+                          {item.result}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 text-[0.75rem] shadow-sm sm:text-sm">
+                    <span className="text-slate-800">
+                      Sie bringen das Fachwissen mit, wir sorgen dafür, dass es
+                      online verstanden wird.
+                    </span>
+                    <span className="rounded-full border border-sky-500/90 px-3 py-1 text-[0.7rem] text-sky-800 bg-sky-50">
+                      Ideal für ein klares Hauptangebot
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* Vorteile */}
+        <section className="relative px-4 py-10 sm:py-14" id="vorteile">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--mid-1" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <Reveal>
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Was eine gute Landing Page für kleine Unternehmen leisten
+                    muss.
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
+                    Eine gute Landing Page ist kein „schönes Plakat“, sondern
+                    ein klares System: verständliche Botschaft, logischer
+                    Aufbau, Vertrauen und ein eindeutiges nächstes
+                    Schrittangebot.
+                  </p>
+                </div>
+                <div className="text-xs text-slate-700 sm:text-sm">
+                  <p>Wir kombinieren Gestaltung, Text und Struktur,</p>
+                  <p>damit Interessenten nicht nur schauen, sondern handeln.</p>
+                </div>
+              </div>
+            </Reveal>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              {features.map((feature, index) => (
+                <Reveal key={feature.title} delay={0.05 * index} y={30}>
+                  <div className="group flex h-full flex-col gap-3 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md transition hover:-translate-y-1 hover:border-sky-500 hover:bg-white">
+                    <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-slate-800">
+                      {feature.description}
+                    </p>
+                    <span className="mt-2 text-xs text-sky-800 opacity-0 transition group-hover:opacity-100">
+                      Fokus: klare nächste Schritte statt „schöner“ Startseite.
+                    </span>
                   </div>
                 </Reveal>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Prozess */}
-      <section className="px-4 py-10 sm:py-14" id="wie-wir-arbeiten">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              So läuft die Zusammenarbeit ab.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <p className="mt-3 max-w-2xl text-sm text-slate-200/80 sm:text-base">
-              Der Prozess ist bewusst schlank gehalten: Sie liefern das
-              Fachwissen zu Ihrem Angebot, wir übersetzen es in eine klare,
-              überzeugende Online-Präsenz.
-            </p>
-          </Reveal>
-
-          <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {steps.map((step, index) => (
-              <Reveal key={step.title} delay={0.04 * index} y={28}>
-                <div className="flex gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-sky-400/15 text-center text-xs font-semibold leading-8 text-sky-300">
-                    {step.title.split(".")[0]}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-50 sm:text-base">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-slate-300/85">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+        {/* Branchen */}
+        <section className="relative px-4 py-10 sm:py-14" id="branchen">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--mid-2" />
           </div>
-        </div>
-      </section>
 
-      {/* FAQ */}
-      <section className="px-4 py-10 sm:py-14" id="faq">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Häufige Fragen.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <p className="mt-3 text-sm text-slate-200/80 sm:text-base">
-              Kurz und verständlich beantwortet – ohne Fachchinesisch.
-            </p>
-          </Reveal>
-
-          <div className="mt-6 space-y-4">
-            {faqs.map((item, index) => (
-              <Reveal key={item.question} delay={0.04 * index} y={24}>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-                  <h3 className="text-sm font-semibold text-slate-50 sm:text-base">
-                    {item.question}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-300/85">
-                    {item.answer}
+          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-md sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <Reveal>
+                <div className="max-w-md">
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Speziell für lokale und kleine Unternehmen.
+                  </h2>
+                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
+                    Wir sprechen nicht in Marketing-Fachbegriffen, sondern in
+                    klaren Worten: Was bringen Ihnen mehr Besucher, wenn keine
+                    Anfragen entstehen? Genau hier setzt eine gute Landing Page
+                    an.
                   </p>
                 </div>
               </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Kontakt / Abschluss-CTA */}
-      <section className="px-4 pb-12 pt-10 sm:pb-16 sm:pt-12" id="kontakt">
-        <Reveal>
-          <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-sky-500/40 bg-slate-900/80 p-6 sm:p-8">
-            <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-500/15 blur-3xl" />
-            <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-
-            <div className="relative">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Lassen Sie uns über Ihre Landing Page sprechen.
-              </h2>
-              <p className="mt-3 text-sm text-slate-200/85 sm:text-base">
-                Erzählen Sie uns kurz, was Sie anbieten und was eine Landing
-                Page für Sie erreichen soll. Wir melden uns mit einem klaren
-                Vorschlag für Vorgehen, Inhalte und Investition.
-              </p>
-
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-slate-200/90">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-0 placeholder:text-slate-500 focus:border-sky-400"
-                      placeholder="Max Mustermann"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-slate-200/90">
-                      E-Mail
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none focus:border-sky-400"
-                      placeholder="name@unternehmen.de"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-medium text-slate-200/90">
-                    Unternehmen / Branche
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none focus:border-sky-400"
-                    placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-medium text-slate-200/90">
-                    Was soll Ihre Landing Page erreichen?
-                  </label>
-                  <textarea
-                    name="goal"
-                    required
-                    className="min-h-[110px] w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none focus:border-sky-400"
-                    placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot, Kampagne für ein neues Produkt …"
-                  />
-                </div>
-
-                {statusMessage && (
-                  <p
-                    className={`text-xs ${
-                      statusType === "success"
-                        ? "text-emerald-400"
-                        : "text-red-400"
-                    }`}
-                  >
-                    {statusMessage}
-                  </p>
-                )}
-
-                <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-400/40 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {isSubmitting
-                      ? "Wird gesendet ..."
-                      : "Unverbindliche Anfrage senden"}
-                  </button>
-                  <p className="text-xs text-slate-400">
-                    Keine Newsletter, kein Spam – wir melden uns persönlich bei
-                    Ihnen.
-                  </p>
-                </div>
-              </form>
+              <div className="mt-2 grid flex-1 grid-cols-1 gap-2 text-sm text-slate-900 sm:grid-cols-2">
+                {industries.map((item, index) => (
+                  <Reveal key={item} delay={0.03 * index} y={18}>
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-600" />
+                      <span>{item}</span>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
             </div>
           </div>
-        </Reveal>
+        </section>
 
-        <footer className="mx-auto mt-8 flex max-w-6xl flex-col gap-2 border-t border-slate-800 pt-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} Landing-Page-Service. Alle Rechte
-            vorbehalten.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Link href="#vorteile" className="hover:text-slate-300">
-              Vorteile
-            </Link>
-            <Link href="#branchen" className="hover:text-slate-300">
-              Branchen
-            </Link>
-            <Link href="#faq" className="hover:text-slate-300">
-              FAQ
-            </Link>
+        {/* Prozess */}
+        <section className="relative px-4 py-10 sm:py-14" id="wie-wir-arbeiten">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--lower-1" />
           </div>
-        </footer>
-      </section>
+
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                So läuft die Zusammenarbeit ab.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
+                Der Prozess ist bewusst schlank gehalten: Sie liefern das
+                Fachwissen zu Ihrem Angebot, wir übersetzen es in eine klare,
+                überzeugende Online-Präsenz.
+              </p>
+            </Reveal>
+
+            <div className="mt-8 grid gap-5 md:grid-cols-2">
+              {steps.map((step, index) => (
+                <Reveal key={step.title} delay={0.04 * index} y={28}>
+                  <div className="flex gap-4 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md">
+                    <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-sky-100 text-center text-xs font-semibold leading-8 text-sky-800">
+                      {step.title.split(".")[0]}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-slate-800">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="relative px-4 py-10 sm:py-14" id="faq">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--lower-2" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-4xl">
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                Häufige Fragen.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-3 text-sm text-slate-800 sm:text-base">
+                Kurz und verständlich beantwortet – ohne Fachchinesisch.
+              </p>
+            </Reveal>
+
+            <div className="mt-6 space-y-4">
+              {faqs.map((item, index) => (
+                <Reveal key={item.question} delay={0.04 * index} y={24}>
+                  <div className="rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md">
+                    <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
+                      {item.question}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-800">
+                      {item.answer}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Kontakt / Abschluss-CTA */}
+        <section
+          className="relative px-4 pb-12 pt-10 sm:pb-16 sm:pt-12"
+          id="kontakt"
+        >
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--contact-1" />
+            <div className="section-blob section-blob--contact-2" />
+          </div>
+
+          <div className="relative z-10">
+            <Reveal>
+              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-sky-400 bg-slate-50 p-6 shadow-lg sm:p-8">
+                <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-200/60 blur-3xl" />
+                <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-200/50 blur-3xl" />
+
+                <div className="relative">
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Lassen Sie uns über Ihre Landing Page sprechen.
+                  </h2>
+                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
+                    Erzählen Sie uns kurz, was Sie anbieten und was eine Landing
+                    Page für Sie erreichen soll. Wir melden uns mit einem klaren
+                    Vorschlag für Vorgehen, Inhalte und Investition.
+                  </p>
+
+                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-slate-800">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          required
+                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-sky-500"
+                          placeholder="Max Mustermann"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-slate-800">
+                          E-Mail
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
+                          placeholder="name@unternehmen.de"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-slate-800">
+                        Unternehmen / Branche
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
+                        placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-slate-800">
+                        Was soll Ihre Landing Page erreichen?
+                      </label>
+                      <textarea
+                        name="goal"
+                        required
+                        className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
+                        placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot, Kampagne für ein neues Produkt …"
+                      />
+                    </div>
+
+                    {statusMessage && (
+                      <p
+                        className={`text-xs ${
+                          statusType === "success"
+                            ? "text-emerald-700"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {statusMessage}
+                      </p>
+                    )}
+
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="inline-flex items-center justify-center rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {isSubmitting
+                          ? "Wird gesendet ..."
+                          : "Unverbindliche Anfrage senden"}
+                      </button>
+                      <p className="text-xs text-slate-700">
+                        Keine Newsletter, kein Spam – wir melden uns persönlich
+                        bei Ihnen.
+                      </p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </Reveal>
+
+            <footer className="mx-auto mt-8 flex max-w-6xl flex-col gap-2 border-t border-slate-300 pt-4 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                © {new Date().getFullYear()} Landing-Page-Service. Alle Rechte
+                vorbehalten.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link href="#vorteile" className="hover:text-slate-900">
+                  Vorteile
+                </Link>
+                <Link href="#branchen" className="hover:text-slate-900">
+                  Branchen
+                </Link>
+                <Link href="#faq" className="hover:text-slate-900">
+                  FAQ
+                </Link>
+              </div>
+            </footer>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
