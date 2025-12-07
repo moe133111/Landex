@@ -19,8 +19,26 @@
   }
 }
 
+/* Basis-Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Standardverhalten: Browser (Dokument) scrollt, kein extra Overflow */
+html,
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
+/* WICHTIG:
+   Kein overflow-x / overflow-y mehr auf html oder body.
+   Der Browser benutzt das Standard-Scrollverhalten. */

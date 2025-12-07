@@ -3,44 +3,50 @@
 
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 
 const features = [
   {
     title: "Mehr Anfragen statt nur Besucher",
     description:
       "Klare Struktur, starke Überschriften und überzeugende Call-to-Actions – damit aus Klicks echte Anfragen, Buchungen oder Bestellungen werden.",
+    hoverHint:
+      "Fokus auf konkrete Aktionen wie Anfrage, Termin oder Buchung – nicht nur auf Seitenaufrufe.",
   },
   {
     title: "Perfekt für lokale Angebote",
     description:
       "Ideal für Restaurants, Friseure, Praxen, Coaches, Handwerker, Fitnessstudios, Kosmetikstudios und alle anderen lokalen Dienstleister.",
+    hoverHint:
+      "Landing Pages, die auf lokale Zielgruppen, Suchanfragen und regionale Besonderheiten zugeschnitten sind.",
   },
   {
     title: "Keine Baukasten-Optik",
     description:
       "Individuelles Design, das zu Ihrem Unternehmen passt – ohne generische Templates, sondern gezielt für Ihr Ziel entworfen.",
+    hoverHint:
+      "Statt Einheitslayout entsteht eine Seite, die sich klar von typischen Baukasten-Websites absetzt.",
   },
 ];
 
 const steps = [
   {
-    title: "1. Kurzes Gespräch",
+    title: "Kurzes Gespräch",
     description:
       "Wir klären in 20–30 Minuten: Ziel der Landing Page, Wunschkunden, Angebot, vorhandenes Material (Logo, Bilder, Texte).",
   },
   {
-    title: "2. Konzept & Entwurf",
+    title: "Konzept & Entwurf",
     description:
       "Wir entwickeln Struktur, Inhalte und Aufbau der Landing Page – von der Hauptbotschaft bis zu den Vertrauenselementen.",
   },
   {
-    title: "3. Umsetzung & Feinschliff",
+    title: "Umsetzung & Feinschliff",
     description:
       "Wir setzen die Seite technisch um, optimieren für Mobilgeräte und passen alles so lange an, bis es wirklich stimmig ist.",
   },
   {
-    title: "4. Live-Schaltung & Auswertung",
+    title: "Live-Schaltung & Auswertung",
     description:
       "Wir helfen bei Domain, Tracking und ggf. Werbeanzeigen – damit Sie sehen, wie viele Anfragen über die Seite kommen.",
   },
@@ -82,19 +88,64 @@ const industries = [
 
 const heroStats = [
   {
-    label: "Friseursalon",
-    goal: "Mehr Terminbuchungen",
-    result: "+68% Online-Termine",
+    title: "Mehr Terminbuchungen für Ihren Friseursalon",
+    description:
+      "Klare Darstellung Ihres Angebots, Öffnungszeiten und Online-Buchungsoptionen auf einer fokussierten Seite.",
   },
   {
-    label: "Restaurant",
-    goal: "Mehr Reservierungen",
-    result: "+42% Tischanfragen",
+    title: "Mehr Reservierungen für Ihr Restaurant",
+    description:
+      "Eine Seite, die Speisekarte, Lage, Öffnungszeiten und Reservierungsmöglichkeiten übersichtlich bündelt.",
   },
   {
-    label: "Praxis",
-    goal: "Klare Erstkontakte",
-    result: "+35% qualifizierte Anfragen",
+    title: "Mehr passende Erstkontakte für Ihre Praxis",
+    description:
+      "Strukturierte Informationen zu Leistungen, Abläufen und Kontaktwegen, damit neue Patientinnen und Patienten wissen, wie der erste Schritt aussieht.",
+  },
+];
+
+const kpis = [
+  {
+    label: "Umgesetzte Landing Pages",
+    value: "25+ Projekte",
+    detail:
+      "für lokale Unternehmen aus Dienstleistung, Gastronomie und Gesundheitsbereich.",
+  },
+  {
+    label: "Typischer Projektzeitraum",
+    value: "2–4 Wochen",
+    detail:
+      "von der ersten Abstimmung bis zur fertigen, online geschalteten Landing Page.",
+  },
+  {
+    label: "Zeit bis zur ersten Version",
+    value: "7–10 Tage",
+    detail:
+      "bei klar umrissenen Angeboten und vorhandenen Basisinhalten (Logo, Bilder, Kernaussagen).",
+  },
+];
+
+const testimonials = [
+  {
+    name: "Julia M.",
+    role: "Inhaberin eines Friseursalons in Berlin",
+    quote:
+      "Wir hatten vorher nur einen Google-Eintrag. Über die neue Landing Page kommen jetzt gezielt Termin-Anfragen, die auch wirklich zu unserem Angebot passen.",
+    result: "Mehr planbare Online-Termine über einen klaren Buchungsfunnel.",
+  },
+  {
+    name: "Kemal A.",
+    role: "Betreiber eines Restaurants in Köln",
+    quote:
+      "Die Seite nimmt unseren Gästen die wichtigsten Fragen vorweg – Öffnungszeiten, Reservierung, Speisekarte. Seitdem bekommen wir deutlich mehr Reservierungen über das Formular.",
+    result: "Stabilere Auslastung unter der Woche durch Online-Reservierungen.",
+  },
+  {
+    name: "Dr. Lisa M.",
+    role: "Inhaberin einer Praxis in München",
+    quote:
+      "Für Erstkontakte ist die Landing Page ideal. Neue Patientinnen und Patienten wissen genau, für welche Themen die Praxis geeignet ist und wie sie einen Termin bekommen.",
+    result: "Besser vorbereitete Erstkontakte mit weniger Rückfragen am Telefon.",
   },
 ];
 
@@ -104,6 +155,23 @@ export default function Home() {
   const [statusType, setStatusType] = useState<"success" | "error" | null>(
     null
   );
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, []);
+
+  const nextTestimonial = () => {
+    setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setActiveTestimonial((prev) =>
+      prev === 0 ? testimonials.length - 1 : prev - 1
+    );
+  };
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -147,7 +215,7 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-slate-100 text-slate-900 overflow-hidden">
+    <main className="relative bg-slate-100 text-slate-900">
       {/* Globales, dezentes Raster im Hintergrund */}
       <div className="page-bg">
         <div className="page-bg-grid" />
@@ -179,17 +247,18 @@ export default function Home() {
           background-size: 72px 72px;
         }
 
+        /* WICHTIG: keine 110vw mehr, kein horizontaler Offset, Overflow wird gekappt */
         .section-blob-wrapper {
           position: absolute;
           top: -80px;
           bottom: -80px;
-          left: 50%;
-          width: 110vw;
-          transform: translateX(-50%);
+          left: 0;
+          right: 0;
+          width: 100%;
+          max-width: 100%;
           pointer-events: none;
-          overflow: visible;
+          overflow: hidden;
           z-index: 0;
-          /* weiches Ausfaden nach oben/unten, aber weniger dominant */
           -webkit-mask-image: linear-gradient(
             to bottom,
             transparent 0%,
@@ -270,7 +339,7 @@ export default function Home() {
           animation: blob1 17s ease-in-out infinite;
         }
 
-        /* Prozess / FAQ-Bereich */
+        /* Prozess / KPI / Testimonials / FAQ-Bereich */
         .section-blob--lower-1 {
           width: 360px;
           height: 360px;
@@ -295,6 +364,34 @@ export default function Home() {
             transparent 65%
           );
           animation: blob3 16s ease-in-out infinite;
+        }
+
+        /* KPI-Bereich */
+        .section-blob--kpi-1 {
+          width: 360px;
+          height: 360px;
+          top: -120px;
+          right: -80px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(79, 70, 229, 0.9),
+            transparent 65%
+          );
+          animation: blob1 18s ease-in-out infinite;
+        }
+
+        /* Testimonials-Bereich */
+        .section-blob--testimonials-1 {
+          width: 340px;
+          height: 340px;
+          top: -100px;
+          left: -80px;
+          background: radial-gradient(
+            circle at 30% 30%,
+            rgba(52, 211, 153, 0.9),
+            transparent 65%
+          );
+          animation: blob2 19s ease-in-out infinite;
         }
 
         /* Kontakt-Bereich */
@@ -324,7 +421,6 @@ export default function Home() {
           animation: blob2 18s ease-in-out infinite;
         }
 
-        /* Stärkere Bewegung + Formveränderung */
         @keyframes blob1 {
           0% {
             transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
@@ -407,9 +503,20 @@ export default function Home() {
           <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-center">
             <Reveal>
               <div className="flex-1">
-                <div className="inline-flex items-center gap-2 rounded-full border border-sky-400 bg-sky-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-800">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Landing Pages für lokale Unternehmen
+                {/* Logo + Badge gruppiert */}
+                <div className="flex flex-col items-start gap-6">
+                  <Link href="/" className="inline-flex items-center">
+                    <img
+                      src="/LandexDigital.svg"
+                      alt="Landex Digital"
+                      className="h-14 w-auto md:h-16"
+                    />
+                  </Link>
+
+                  <div className="inline-flex items-center gap-2 rounded-full border border-sky-400 bg-sky-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-800">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Landing Pages für lokale Unternehmen
+                  </div>
                 </div>
 
                 <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
@@ -429,7 +536,7 @@ export default function Home() {
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Link
                     href="#kontakt"
-                    className="group rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:bg-sky-500"
+                    className="group rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:-translate-y-0.5 hover:bg-sky-500"
                   >
                     <span className="inline-flex items-center gap-2">
                       Unverbindliches Erstgespräch anfragen
@@ -461,51 +568,30 @@ export default function Home() {
 
             <Reveal delay={0.1}>
               <div className="flex-1">
-                <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-2xl shadow-sky-300/70 backdrop-blur-sm">
+                <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-2xl shadow-sky-300/70 backdrop-blur-sm transition hover:-translate-y-1 hover:shadow-sky-300">
                   <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-sky-200/70 via-transparent to-blue-300/70 blur-xl" />
 
                   <div className="mb-4 flex items-center justify-between gap-4">
                     <h2 className="text-sm font-semibold text-slate-900 sm:text-base">
                       Was eine gute Landing Page bewirken kann
                     </h2>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-[0.7rem] text-slate-700">
-                      Beispiele aus echten Projekten
-                    </span>
                   </div>
-
-                  <p className="text-xs text-slate-700 sm:text-sm">
-                    Jede Branche hat andere Ziele – aber das Prinzip ist immer
-                    gleich: ein klares Angebot, ein roter Faden und ein
-                    eindeutiger nächster Schritt.
-                  </p>
 
                   <div className="mt-5 space-y-3">
                     {heroStats.map((item) => (
                       <div
-                        key={item.label}
-                        className="rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm"
+                        key={item.title}
+                        className="group rounded-2xl border border-slate-300 bg-white/95 px-4 py-3 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-md"
                       >
-                        <p className="text-xs font-semibold text-slate-900 sm:text-sm">
-                          {item.label}
+                        <p className="flex items-center gap-2 text-xs font-semibold text-slate-900 sm:text-sm">
+                          <span className="h-1.5 w-1.5 rounded-full bg-sky-500 group-hover:bg-emerald-500 transition" />
+                          {item.title}
                         </p>
                         <p className="mt-1 text-[0.7rem] text-slate-700 sm:text-xs">
-                          {item.goal}
-                        </p>
-                        <p className="mt-2 text-xs font-semibold text-emerald-600 sm:text-sm">
-                          {item.result}
+                          {item.description}
                         </p>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 text-[0.75rem] shadow-sm sm:text-sm">
-                    <span className="text-slate-800">
-                      Sie bringen das Fachwissen mit, wir sorgen dafür, dass es
-                      online verstanden wird.
-                    </span>
-                    <span className="rounded-full border border-sky-500/90 px-3 py-1 text-[0.7rem] text-sky-800 bg-sky-50">
-                      Ideal für ein klares Hauptangebot
-                    </span>
                   </div>
                 </div>
               </div>
@@ -544,7 +630,7 @@ export default function Home() {
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {features.map((feature, index) => (
                 <Reveal key={feature.title} delay={0.05 * index} y={30}>
-                  <div className="group flex h-full flex-col gap-3 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md transition hover:-translate-y-1 hover:border-sky-500 hover:bg-white">
+                  <div className="group flex h-full flex-col gap-3 rounded-2xl border border-slate-300 bg-slate-50/95 p-5 shadow-md transition hover:-translate-y-1.5 hover:border-sky-500 hover:bg-white">
                     <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
                       {feature.title}
                     </h3>
@@ -552,7 +638,7 @@ export default function Home() {
                       {feature.description}
                     </p>
                     <span className="mt-2 text-xs text-sky-800 opacity-0 transition group-hover:opacity-100">
-                      Fokus: klare nächste Schritte statt „schöner“ Startseite.
+                      {feature.hoverHint}
                     </span>
                   </div>
                 </Reveal>
@@ -567,7 +653,7 @@ export default function Home() {
             <div className="section-blob section-blob--mid-2" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-md sm:p-8">
+          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <Reveal>
                 <div className="max-w-md">
@@ -585,8 +671,8 @@ export default function Home() {
               <div className="mt-2 grid flex-1 grid-cols-1 gap-2 text-sm text-slate-900 sm:grid-cols-2">
                 {industries.map((item, index) => (
                   <Reveal key={item} delay={0.03 * index} y={18}>
-                    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-sky-600" />
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:-translate-y-1 hover:border-sky-500 hover:bg-white/90">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-600 transition group-hover:bg-emerald-500" />
                       <span>{item}</span>
                     </div>
                   </Reveal>
@@ -619,9 +705,9 @@ export default function Home() {
             <div className="mt-8 grid gap-5 md:grid-cols-2">
               {steps.map((step, index) => (
                 <Reveal key={step.title} delay={0.04 * index} y={28}>
-                  <div className="flex gap-4 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md">
-                    <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-sky-100 text-center text-xs font-semibold leading-8 text-sky-800">
-                      {step.title.split(".")[0]}
+                  <div className="group flex gap-4 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md transition hover:-translate-y-1.5 hover:border-sky-500/80 hover:bg-white">
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
+                      {index + 1}
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
@@ -634,6 +720,140 @@ export default function Home() {
                   </div>
                 </Reveal>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* KPIs / Ergebnisse */}
+        <section className="relative px-4 py-10 sm:py-14" id="ergebnisse">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--kpi-1" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-md sm:p-8">
+            <Reveal>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Was unsere Landing Pages in der Praxis zeigen.
+                  </h2>
+                  <p className="mt-3 max-w-xl text-sm text-slate-800 sm:text-base">
+                    Die genauen Ergebnisse hängen immer von Angebot, Region und
+                    bestehenden Kanälen ab. Die Kennzahlen helfen, die
+                    Größenordnung und den Rahmen der Zusammenarbeit einzuordnen.
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {kpis.map((item, index) => (
+                <Reveal key={item.label} delay={0.04 * index} y={22}>
+                  <div className="group flex h-full flex-col rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-1.5 hover:border-sky-500/80 hover:shadow-md">
+                    <p className="text-xs font-medium text-slate-700 sm:text-sm">
+                      {item.label}
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
+                      {item.value}
+                    </p>
+                    <p className="mt-2 text-xs text-slate-700 sm:text-sm">
+                      {item.detail}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Kundenstimmen / Testimonials – Karussell */}
+        <section className="relative px-4 py-10 sm:py-14" id="stimmen">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--testimonials-1" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                Was Kundinnen und Kunden über die Zusammenarbeit sagen.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
+                Die Rückmeldungen sind für uns wichtiger als einzelne
+                Kennzahlen. Sie zeigen, ob die Landing Page im Alltag wirklich
+                hilft – bei Anfragen, Planung und Kommunikation.
+              </p>
+            </Reveal>
+
+            <div className="mt-8 relative">
+              <div className="overflow-hidden rounded-3xl border border-slate-300 bg-slate-50/95 p-4 shadow-md">
+                <div
+                  className="flex transition-transform duration-500"
+                  style={{
+                    transform: `translateX(-${activeTestimonial * 100}%)`,
+                  }}
+                >
+                  {testimonials.map((item) => (
+                    <div
+                      key={item.name}
+                      className="min-w-full px-1 py-2 sm:px-4 sm:py-4"
+                    >
+                      <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:shadow-md">
+                        <p className="text-sm text-slate-800 leading-relaxed">
+                          „{item.quote}“
+                        </p>
+                        <div className="mt-4 text-xs text-slate-700">
+                          <p className="font-semibold text-slate-900">
+                            {item.name}
+                          </p>
+                          <p>{item.role}</p>
+                        </div>
+                        <p className="mt-3 text-xs font-medium text-emerald-700">
+                          {item.result}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => setActiveTestimonial(index)}
+                      className={`h-2.5 rounded-full transition ${
+                        activeTestimonial === index
+                          ? "w-6 bg-sky-600"
+                          : "w-2.5 bg-slate-300 hover:bg-slate-400"
+                      }`}
+                      aria-label={`Testimonial ${index + 1} anzeigen`}
+                    />
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={prevTestimonial}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white text-xs text-slate-700 shadow-sm transition hover:border-sky-500 hover:text-sky-700"
+                    aria-label="Vorherige Referenz"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextTestimonial}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white text-xs text-slate-700 shadow-sm transition hover:border-sky-500 hover:text-sky-700"
+                    aria-label="Nächste Referenz"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -659,9 +879,12 @@ export default function Home() {
             <div className="mt-6 space-y-4">
               {faqs.map((item, index) => (
                 <Reveal key={item.question} delay={0.04 * index} y={24}>
-                  <div className="rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md">
-                    <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
-                      {item.question}
+                  <div className="group rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white">
+                    <h3 className="flex items-center justify-between gap-2 text-sm font-semibold text-slate-900 sm:text-base">
+                      <span>{item.question}</span>
+                      <span className="text-xs text-sky-600 opacity-0 transition group-hover:opacity-100">
+                        ?
+                      </span>
                     </h3>
                     <p className="mt-2 text-sm text-slate-800">
                       {item.answer}
@@ -685,7 +908,7 @@ export default function Home() {
 
           <div className="relative z-10">
             <Reveal>
-              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-sky-400 bg-slate-50 p-6 shadow-lg sm:p-8">
+              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-sky-400 bg-slate-50 p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-sky-300 sm:p-8">
                 <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-200/60 blur-3xl" />
                 <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-200/50 blur-3xl" />
 
@@ -767,7 +990,7 @@ export default function Home() {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="inline-flex items-center justify-center rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center justify-center rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/50 transition hover:-translate-y-0.5 hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         {isSubmitting
                           ? "Wird gesendet ..."
