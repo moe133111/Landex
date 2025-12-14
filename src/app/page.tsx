@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { useEffect, useMemo, useState, FormEvent } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -31,7 +31,6 @@ type Feature = {
   description: string;
   hoverHint: string;
   icon: React.ComponentType<{ className?: string }>;
-  accent: "sky" | "emerald";
 };
 
 type Step = {
@@ -83,43 +82,34 @@ const heroProof = [
     title: "Mehr Terminbuchungen",
     description: "Klarer Ablauf + sichtbarer nächster Schritt statt „nur Infos“.",
     icon: CalendarCheck,
-    tone: "emerald",
   },
   {
     title: "Mehr Anfragen, die passen",
     description: "Gute Botschaft + Vertrauen + CTA – ohne Umwege.",
     icon: Target,
-    tone: "sky",
   },
   {
     title: "Weniger Rückfragen",
     description: "Die Seite beantwortet die wichtigsten Punkte vorab.",
     icon: MessageCircle,
-    tone: "emerald",
   },
 ] as const;
 
-const kpis = [
+const timelineMeta = [
   {
-    label: "Umgesetzte Landing Pages",
-    value: "25+ Projekte",
-    detail:
-      "für lokale Unternehmen aus Dienstleistung, Gastronomie und Gesundheitsbereich.",
-    icon: BadgeCheck,
-  },
-  {
-    label: "Typischer Projektzeitraum",
-    value: "2–4 Wochen",
-    detail:
-      "von der ersten Abstimmung bis zur fertigen, online geschalteten Landing Page.",
-    icon: Timer,
+    label: "Erstgespräch",
+    value: "20–30 Minuten",
+    icon: MessageCircle,
   },
   {
     label: "Zeit bis zur ersten Version",
     value: "7–10 Tage",
-    detail:
-      "bei klar umrissenen Angeboten und vorhandenen Basisinhalten (Logo, Bilder, Kernaussagen).",
     icon: Rocket,
+  },
+  {
+    label: "Typischer Projektzeitraum",
+    value: "2–4 Wochen",
+    icon: Timer,
   },
 ];
 
@@ -161,34 +151,32 @@ export default function Home() {
   // Autoplay / Pause-on-hover für Testimonials
   const [isTestimonialPaused, setIsTestimonialPaused] = useState(false);
 
+  // Blau = Information, Grün = Aktion (Buttons/Form)
   const features: Feature[] = useMemo(
     () => [
       {
-        title: "Mehr Anfragen statt nur Besucher",
+        title: "Klare Botschaft (in 5 Sekunden verstanden)",
         description:
-          "Struktur und klare Überschriften – damit aus Klicks echte Anfragen, Buchungen oder Verkäufe werden.",
+          "Überschriften und Struktur führen sofort zum Angebot: Was ist es, für wen ist es, warum lohnt es sich.",
         hoverHint:
-          "Wir optimieren auf den nächsten Schritt: Anfrage, Termin, Buchung – nicht auf reine Seitenaufrufe.",
+          "Keine Textwüste: Wir priorisieren, was ein Interessent wirklich wissen muss – in der richtigen Reihenfolge.",
+        icon: Sparkles,
+      },
+      {
+        title: "Vertrauen (bevor jemand Kontakt aufnimmt)",
+        description:
+          "Belege, Beispiele und Antworten auf typische Fragen – damit Anfragen leichter und schneller entstehen.",
+        hoverHint:
+          "Social Proof, klare Prozesse und konkrete Aussagen reduzieren Unsicherheit und Rückfragen.",
+        icon: BadgeCheck,
+      },
+      {
+        title: "Nächster Schritt (ohne Umwege)",
+        description:
+          "Der CTA ist sichtbar, logisch platziert und passt zum Kontext – damit aus Besuchern echte Kontakte werden.",
+        hoverHint:
+          "Wir optimieren auf Termin/Anfrage/Buchung – nicht auf reine Seitenaufrufe.",
         icon: MousePointerClick,
-        accent: "sky",
-      },
-      {
-        title: "Perfekt für lokale Angebote",
-        description:
-          "Ideal für Dienstleister und Betriebe vor Ort – mit Fokus auf regionale Suchanfragen, Vertrauen und schnelle Kontaktwege.",
-        hoverHint:
-          "Ihre Zielgruppe soll sofort verstehen: Was bekomme ich, für wen ist es und wie geht es weiter?",
-        icon: MapPin,
-        accent: "emerald",
-      },
-      {
-        title: "Individuell statt Baukasten",
-        description:
-          "Ein Design, das zu Ihrem Unternehmen passt – präzise, hochwertig und mit klarer Nutzerführung.",
-        hoverHint:
-          "Keine generischen Templates: Wir bauen eine Seite, die bewusst auf Ihr Ziel hin gestaltet ist.",
-        icon: Palette,
-        accent: "sky",
       },
     ],
     []
@@ -199,7 +187,7 @@ export default function Home() {
       {
         title: "Kurzes Gespräch",
         description:
-          "In 20–30 Minuten klären wir Ziel, Angebot, Wunschkunden und vorhandenes Material (Logo, Bilder, Texte).",
+          "Wir klären Ziel, Angebot, Wunschkunden und vorhandenes Material (Logo, Bilder, Kernaussagen).",
         icon: MessageCircle,
       },
       {
@@ -211,13 +199,13 @@ export default function Home() {
       {
         title: "Design & Umsetzung",
         description:
-          "Wir setzen die Landing Page technisch um, optimieren für Mobilgeräte und feilen an Details und Wirkung.",
-        icon: Sparkles,
+          "Wir setzen die Landing Page technisch um, optimieren für Mobilgeräte und schärfen Wirkung und Details.",
+        icon: Palette,
       },
       {
         title: "Live & messen",
         description:
-          "Wir helfen bei Domain/Tracking und optionaler Kampagne – damit Sie sehen, wie viele Anfragen entstehen.",
+          "Wir unterstützen bei Domain/Tracking und optionaler Kampagne – damit Sie nachvollziehen können, was funktioniert.",
         icon: BarChart3,
       },
     ],
@@ -230,17 +218,7 @@ export default function Home() {
     }
   }, []);
 
-  const nextTestimonial = () => {
-    setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setActiveTestimonial((prev) =>
-      prev === 0 ? testimonials.length - 1 : prev - 1
-    );
-  };
-
-  // Autoplay: alle 5.5s, pausiert bei Hover
+  // Autoplay: alle 3.5s, pausiert bei Hover
   useEffect(() => {
     if (isTestimonialPaused) return;
 
@@ -253,11 +231,14 @@ export default function Home() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const form = e.currentTarget;
+
     setIsSubmitting(true);
     setStatusMessage(null);
     setStatusType(null);
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
 
     const payload = {
       name: formData.get("name"),
@@ -276,7 +257,7 @@ export default function Home() {
       if (res.ok) {
         setStatusType("success");
         setStatusMessage("Danke, Ihre Nachricht wurde gesendet.");
-        e.currentTarget.reset();
+        form.reset();
       } else {
         setStatusType("error");
         setStatusMessage(
@@ -368,7 +349,7 @@ export default function Home() {
           will-change: transform, border-radius;
         }
 
-        /* Hero Blobs (etwas kräftiger/verspielter) */
+        /* Blobs – bewusst ruhiger (Info blau, Aktion grün eher als Akzent) */
         .section-blob--hero-1 {
           width: 420px;
           height: 420px;
@@ -376,7 +357,7 @@ export default function Home() {
           left: -120px;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(56, 189, 248, 0.98),
+            rgba(56, 189, 248, 0.8),
             transparent 64%
           );
           animation: blob1 14s ease-in-out infinite;
@@ -388,7 +369,7 @@ export default function Home() {
           right: -180px;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(59, 130, 246, 0.92),
+            rgba(59, 130, 246, 0.72),
             transparent 64%
           );
           animation: blob2 16s ease-in-out infinite;
@@ -400,7 +381,7 @@ export default function Home() {
           left: 45%;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(52, 211, 153, 0.9),
+            rgba(52, 211, 153, 0.55),
             transparent 66%
           );
           animation: blob3 18s ease-in-out infinite;
@@ -413,7 +394,7 @@ export default function Home() {
           right: -140px;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(129, 140, 248, 0.88),
+            rgba(129, 140, 248, 0.55),
             transparent 66%
           );
           animation: blob3 15s ease-in-out infinite;
@@ -425,7 +406,7 @@ export default function Home() {
           left: 10%;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(52, 211, 153, 0.92),
+            rgba(56, 189, 248, 0.5),
             transparent 66%
           );
           animation: blob1 17s ease-in-out infinite;
@@ -437,7 +418,7 @@ export default function Home() {
           left: 20%;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(56, 189, 248, 0.88),
+            rgba(59, 130, 246, 0.55),
             transparent 66%
           );
           animation: blob2 17s ease-in-out infinite;
@@ -449,84 +430,10 @@ export default function Home() {
           right: -130px;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(59, 130, 246, 0.9),
+            rgba(52, 211, 153, 0.45),
             transparent 66%
           );
           animation: blob3 16s ease-in-out infinite;
-        }
-        .section-blob--kpi-1 {
-          width: 380px;
-          height: 380px;
-          top: -140px;
-          right: -90px;
-          background: radial-gradient(
-            circle at 30% 30%,
-            rgba(16, 185, 129, 0.7),
-            transparent 70%
-          );
-          animation: blob1 18s ease-in-out infinite;
-        }
-        .section-blob--testimonials-1 {
-          width: 360px;
-          height: 360px;
-          top: -120px;
-          left: -90px;
-          background: radial-gradient(
-            circle at 30% 30%,
-            rgba(52, 211, 153, 0.84),
-            transparent 68%
-          );
-          animation: blob2 19s ease-in-out infinite;
-        }
-        .section-blob--contact-1 {
-          width: 380px;
-          height: 380px;
-          top: -140px;
-          right: -90px;
-          background: radial-gradient(
-            circle at 30% 30%,
-            rgba(59, 130, 246, 0.92),
-            transparent 66%
-          );
-          animation: blob1 15s ease-in-out infinite;
-        }
-        .section-blob--contact-2 {
-          width: 340px;
-          height: 340px;
-          bottom: -140px;
-          left: 25%;
-          background: radial-gradient(
-            circle at 30% 30%,
-            rgba(52, 211, 153, 0.9),
-            transparent 66%
-          );
-          animation: blob2 18s ease-in-out infinite;
-        }
-
-        /* Verspielte Floating-Icons */
-        .floaty {
-          position: absolute;
-          pointer-events: none;
-          opacity: 0.9;
-          filter: drop-shadow(0 10px 18px rgba(2, 132, 199, 0.25));
-          animation: floaty 6.5s ease-in-out infinite;
-        }
-        .floaty--slow {
-          animation-duration: 9s;
-        }
-        .floaty--fast {
-          animation-duration: 5.4s;
-        }
-        @keyframes floaty {
-          0% {
-            transform: translate3d(0, 0, 0) rotate(0deg);
-          }
-          50% {
-            transform: translate3d(0, -10px, 0) rotate(3deg);
-          }
-          100% {
-            transform: translate3d(0, 0, 0) rotate(0deg);
-          }
         }
 
         @keyframes blob1 {
@@ -599,7 +506,7 @@ export default function Home() {
 
       {/* Inhaltsebene */}
       <div className="relative z-10">
-        {/* HERO */}
+        {/* HERO – bewusst einspaltig, CTA reduziert (Info zuerst) */}
         <section className="relative px-4 py-12 sm:py-16 lg:py-20">
           <div className="section-blob-wrapper">
             <div className="section-blob section-blob--hero-1" />
@@ -607,178 +514,87 @@ export default function Home() {
             <div className="section-blob section-blob--hero-3" />
           </div>
 
-          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-10 lg:flex-row lg:items-center">
+          <div className="relative z-10 mx-auto max-w-6xl">
             <Reveal>
-              <div className="flex-1">
-                <div className="flex flex-col items-start gap-6">
-                  <Link href="/" className="inline-flex items-center">
-                    <img
-                      src="/LandexDigital.svg"
-                      alt="Landex Digital"
-                      className="h-14 w-auto md:h-16"
-                    />
-                  </Link>
+              <div className="flex flex-col items-start gap-6">
+                <Link href="/" className="inline-flex items-center">
+                  <img
+                    src="/LandexDigital.svg"
+                    alt="Landex Digital"
+                    className="h-14 w-auto md:h-16"
+                  />
+                </Link>
 
-                  <div className="inline-flex items-center gap-2 rounded-full border border-sky-400 bg-sky-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-800">
-                    <Sparkles className="h-4 w-4 text-sky-700" />
-                    Landing Pages für lokale Unternehmen
-                    <span className="ml-1 h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  </div>
-                </div>
-
-                <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-                  Landing Pages,{" "}
-                  <span className="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
-                    die Besucher in Anfragen verwandeln.
-                  </span>
-                </h1>
-
-                <p className="mt-5 max-w-xl text-balance text-base text-slate-800 sm:text-lg">
-                  In einem kurzen Erstgespräch klären wir Ziel, Angebot und
-                  Wunschkunden – danach bauen wir eine fokussierte Seite mit
-                  klarer Führung, Vertrauen und einem eindeutigen nächsten
-                  Schritt.
-                </p>
-
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <Link
-                    href="#kontakt"
-                    className="group inline-flex items-center gap-2 rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/45 transition hover:-translate-y-0.5 hover:bg-sky-500"
-                  >
-                    Erstgespräch anfragen
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </Link>
-
-                  <Link
-                    href="#vorteile"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
-                  >
-                    Vorteile ansehen <ChevronDown className="h-4 w-4" />
-                  </Link>
-                </div>
-
-                {/* Mini-Proof (kurz, geführt) */}
-                <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                  {heroProof.map((item) => {
-                    const Icon = item.icon;
-                    const tone =
-                      item.tone === "emerald"
-                        ? "border-emerald-300 bg-emerald-50/70 text-emerald-800"
-                        : "border-sky-300 bg-sky-50/70 text-sky-800";
-
-                    return (
-                      <div
-                        key={item.title}
-                        className={`group rounded-2xl border px-3 py-2 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${tone}`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <Icon className="mt-0.5 h-4 w-4 shrink-0 opacity-90" />
-                          <div>
-                            <p className="text-xs font-semibold text-slate-900">
-                              {item.title}
-                            </p>
-                            <p className="mt-0.5 text-[0.72rem] text-slate-700">
-                              {item.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                {/* Blau = Information */}
+                <div className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-sky-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-sky-800">
+                  <Sparkles className="h-4 w-4 text-sky-700" />
+                  Landing Pages für lokale Unternehmen
                 </div>
               </div>
             </Reveal>
 
-            <Reveal delay={0.1}>
-              <div className="flex-1">
-                <div className="relative mx-auto w-full max-w-xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-2xl shadow-sky-300/60 backdrop-blur-sm transition hover:-translate-y-1 hover:shadow-sky-300">
-                  <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-sky-200/70 via-transparent to-blue-300/70 blur-xl" />
+            <Reveal delay={0.05}>
+              <h1 className="mt-6 max-w-4xl text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                Landing Pages,{" "}
+                <span className="bg-gradient-to-r from-sky-600 to-blue-700 bg-clip-text text-transparent">
+                  die Besucher in Anfragen verwandeln.
+                </span>
+              </h1>
+            </Reveal>
 
-                  {/* Verspielte Floating-Icons auf der Karte */}
-                  <div className="floaty -top-6 left-8 rounded-2xl border border-sky-300 bg-white/90 p-2">
-                    <Sparkles className="h-5 w-5 text-sky-700" />
-                  </div>
-                  <div className="floaty floaty--slow -right-5 top-10 rounded-2xl border border-emerald-300 bg-white/90 p-2">
-                    <Target className="h-5 w-5 text-emerald-700" />
-                  </div>
-                  <div className="floaty floaty--fast bottom-6 -left-4 rounded-2xl border border-slate-300 bg-white/90 p-2">
-                    <Wand2 className="h-5 w-5 text-slate-700" />
-                  </div>
+            <Reveal delay={0.08}>
+              <p className="mt-5 max-w-2xl text-balance text-base text-slate-800 sm:text-lg">
+                Wir bauen fokussierte Seiten mit klarer Führung, Vertrauen und
+                einem eindeutigen nächsten Schritt – damit Interessenten nicht
+                suchen müssen, sondern handeln können.
+              </p>
+            </Reveal>
 
-                  <div className="mb-4 flex items-center justify-between gap-4">
-                    <h2 className="text-sm font-semibold text-slate-900 sm:text-base">
-                      Was eine gute Landing Page bewirken kann
-                    </h2>
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
-                      <BadgeCheck className="h-4 w-4 text-emerald-700" />
-                      Klar. Schnell. Führend.
-                    </div>
-                  </div>
+            {/* Nur Info-Link im Hero */}
+            <Reveal delay={0.12}>
+              <div className="mt-7 flex flex-wrap items-center gap-4">
+                <Link
+                  href="#vorteile"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
+                >
+                  Vorteile ansehen <ChevronDown className="h-4 w-4" />
+                </Link>
 
-                  <div className="mt-5 space-y-3">
-                    {[
-                      {
-                        title: "Mehr Reservierungen / Termine",
-                        description:
-                          "Ein klarer Funnel statt „Scroll & Hoffnung“ – mit sichtbarer Aktion.",
-                        icon: CalendarCheck,
-                        tone: "emerald",
-                      },
-                      {
-                        title: "Höhere Kontaktquote",
-                        description:
-                          "Starke Botschaft + Vertrauen + CTA – präzise auf Ihr Angebot.",
-                        icon: MousePointerClick,
-                        tone: "sky",
-                      },
-                    ].map((item) => {
-                      const Icon = item.icon;
-                      const dot =
-                        item.tone === "emerald"
-                          ? "bg-emerald-500"
-                          : "bg-sky-500";
+                <span className="text-xs text-slate-600">
+                  Erstgespräch & Formular nach dem Ablauf (unten).
+                </span>
+              </div>
+            </Reveal>
 
-                      return (
-                        <div
-                          key={item.title}
-                          className="group rounded-2xl border border-slate-300 bg-white/95 px-4 py-3 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-md"
-                        >
-                          <p className="flex items-center gap-2 text-xs font-semibold text-slate-900 sm:text-sm">
-                            <span
-                              className={`h-1.5 w-1.5 rounded-full ${dot} transition group-hover:scale-125`}
-                            />
-                            <Icon className="h-4 w-4 text-slate-700" />
+            {/* Mini-Proof (kurz) */}
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {heroProof.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <Reveal key={item.title} delay={0.04 * idx} y={18}>
+                    <div className="group rounded-2xl border border-slate-300 bg-slate-50/95 px-4 py-3 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-md">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">
                             {item.title}
                           </p>
-                          <p className="mt-1 text-[0.7rem] text-slate-700 sm:text-xs">
+                          <p className="mt-1 text-sm text-slate-700">
                             {item.description}
                           </p>
                         </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="mt-5 flex flex-wrap items-center gap-3 text-xs text-slate-700">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 shadow-sm">
-                      <Timer className="h-4 w-4 text-slate-700" />
-                      20–30 Min Erstgespräch
+                      </div>
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 shadow-sm">
-                      <Sparkles className="h-4 w-4 text-sky-700" />
-                      Copy & Design inklusive
-                    </div>
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 shadow-sm">
-                      <BarChart3 className="h-4 w-4 text-emerald-700" />
-                      Messbar statt Bauchgefühl
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
+                  </Reveal>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        {/* 3 BENEFITS (direkt nach Hero) */}
+        {/* Vorteile – Nutzen klar, keine Dopplung mit „Was bewirkt…“ */}
         <section className="relative px-4 py-10 sm:py-14" id="vorteile">
           <div className="section-blob-wrapper">
             <div className="section-blob section-blob--mid-1" />
@@ -789,18 +605,19 @@ export default function Home() {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Drei Dinge, die Ihre Landing Page leisten muss.
+                    So helfen wir Ihnen zu mehr Erfolg.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
-                    Nicht mehr Text – sondern klarere Führung: Botschaft,
-                    Vertrauen und ein eindeutiger nächster Schritt.
+                    Die Seite ist so aufgebaut, dass ein Interessent in kurzer
+                    Zeit alles Wichtige versteht – und den nächsten Schritt ohne
+                    Zweifel geht.
                   </p>
                 </div>
 
                 <div className="text-xs text-slate-700 sm:text-sm">
                   <p className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-sky-700" />
-                    Premium-sachlich, aber mit Persönlichkeit.
+                    <Target className="h-4 w-4 text-sky-700" />
+                    Fokus: Anfrage, Termin oder Buchung.
                   </p>
                 </div>
               </div>
@@ -809,24 +626,13 @@ export default function Home() {
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
-                const accentRing =
-                  feature.accent === "emerald"
-                    ? "group-hover:shadow-emerald-200/70"
-                    : "group-hover:shadow-sky-200/70";
-                const iconBg =
-                  feature.accent === "emerald"
-                    ? "bg-emerald-100 text-emerald-800 group-hover:bg-emerald-600 group-hover:text-white"
-                    : "bg-sky-100 text-sky-800 group-hover:bg-sky-600 group-hover:text-white";
 
                 return (
-                  <Reveal key={feature.title} delay={0.05 * index} y={30}>
-                    <div
-                      className={`group flex h-full flex-col gap-3 rounded-2xl border border-slate-300 bg-slate-50/95 p-5 shadow-md transition hover:-translate-y-1.5 hover:border-sky-500 hover:bg-white hover:shadow-lg ${accentRing}`}
-                    >
+                  <Reveal key={feature.title} delay={0.05 * index} y={28}>
+                    <div className="group flex h-full flex-col gap-3 rounded-2xl border border-slate-300 bg-slate-50/95 p-5 shadow-md transition hover:-translate-y-1.5 hover:border-sky-500/80 hover:bg-white hover:shadow-lg">
                       <div className="flex items-start gap-3">
-                        <div
-                          className={`mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition ${iconBg}`}
-                        >
+                        {/* Blau = Information */}
+                        <div className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
@@ -857,229 +663,89 @@ export default function Home() {
                 );
               })}
             </div>
-
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-slate-300 bg-slate-50/95 p-5 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800">
-                  <BadgeCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    Nächster Schritt: kurzes Erstgespräch
-                  </p>
-                  <p className="mt-1 text-sm text-slate-800">
-                    Sie schildern kurz Ihr Angebot – wir skizzieren eine klare
-                    Richtung für Struktur, Inhalte und Vorgehen.
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                href="#kontakt"
-                className="group inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/45 transition hover:-translate-y-0.5 hover:bg-sky-500"
-              >
-                Erstgespräch anfragen
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-            </div>
           </div>
         </section>
 
-        {/* BRANCHEN (später, gestuft) */}
-        <section className="relative px-4 py-10 sm:py-14" id="branchen">
+        {/* Proof – Branchen + Kundenstimmen zusammengeführt */}
+        <section className="relative px-4 py-10 sm:py-14" id="proof">
           <div className="section-blob-wrapper">
             <div className="section-blob section-blob--mid-2" />
           </div>
 
-          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md transition hover:-translate-y-1 hover:shadow-lg sm:p-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <Reveal>
-                <div className="max-w-md">
-                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Für lokale Unternehmen gemacht.
-                  </h2>
-                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
-                    Ohne Fachsprache: Besucher sollen sofort verstehen, was Sie
-                    anbieten – und wie sie den nächsten Schritt gehen.
-                  </p>
-                </div>
-              </Reveal>
-
-              <div className="mt-2 grid flex-1 grid-cols-1 gap-2 text-sm text-slate-900 sm:grid-cols-2">
-                {industries.map((item, index) => (
-                  <Reveal key={item} delay={0.03 * index} y={18}>
-                    <div className="group flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:-translate-y-1 hover:border-sky-500 hover:bg-white/90">
-                      <MapPin className="h-4 w-4 text-emerald-700 transition group-hover:scale-110" />
-                      <span>{item}</span>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROZESS (mehr Icons, verspielter) */}
-        <section className="relative px-4 py-10 sm:py-14" id="wie-wir-arbeiten">
-          <div className="section-blob-wrapper">
-            <div className="section-blob section-blob--lower-1" />
-          </div>
-
           <div className="relative z-10 mx-auto max-w-6xl">
             <Reveal>
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                So läuft die Zusammenarbeit ab.
+                Für lokale Unternehmen gemacht – und im Alltag bewährt.
               </h2>
             </Reveal>
             <Reveal delay={0.05}>
-              <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
-                Schlank im Prozess, präzise im Ergebnis: Sie liefern das
-                Fachwissen – wir übersetzen es in eine überzeugende Seite mit
-                klarer Führung.
+              <p className="mt-3 max-w-3xl text-sm text-slate-800 sm:text-base">
+                Verständliche Sprache, klare Struktur und schnelle Kontaktwege –
+                damit Interessenten sofort wissen, ob Ihr Angebot passt.
               </p>
             </Reveal>
 
-            <div className="mt-8 grid gap-5 md:grid-cols-2">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <Reveal key={step.title} delay={0.04 * index} y={28}>
-                    <div className="group relative flex gap-4 rounded-2xl border border-slate-300 bg-slate-50 p-5 shadow-md transition hover:-translate-y-1.5 hover:border-sky-500/80 hover:bg-white hover:shadow-lg">
-                      <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-sky-200/30 blur-2xl opacity-0 transition group-hover:opacity-100" />
-
-                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
-                        <Icon className="h-5 w-5" />
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between gap-3">
-                          <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
-                            {step.title}
-                          </h3>
-                          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 shadow-sm">
-                            Schritt {index + 1}
-                          </div>
-                        </div>
-                        <p className="mt-2 text-sm text-slate-800">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Reveal>
-                );
-              })}
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3 rounded-3xl border border-slate-300 bg-slate-50/95 p-5 shadow-sm">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
-                <Timer className="h-4 w-4 text-slate-700" /> Erstgespräch: 20–30
-                Minuten
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
-                <Sparkles className="h-4 w-4 text-sky-700" /> Copy & Design
-                inklusive
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
-                <BarChart3 className="h-4 w-4 text-emerald-700" /> Fokus auf
-                messbare Kontakte
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* KPIs / Ergebnisse */}
-        <section className="relative px-4 py-10 sm:py-14" id="ergebnisse">
-          <div className="section-blob-wrapper">
-            <div className="section-blob section-blob--kpi-1" />
-          </div>
-
-          <div className="relative z-10 mx-auto max-w-6xl rounded-3xl border border-slate-300 bg-slate-50 p-6 shadow-md sm:p-8">
-            <Reveal>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Orientierung in Zahlen.
-                  </h2>
-                  <p className="mt-3 max-w-xl text-sm text-slate-800 sm:text-base">
-                    Ergebnisse hängen immer von Angebot, Region und Kanälen ab.
-                    Diese Kennzahlen helfen, Umfang und Ablauf realistisch
-                    einzuordnen.
-                  </p>
+            <div className="mt-8 grid gap-6 lg:grid-cols-2">
+              {/* Branchen */}
+              <div className="rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md sm:p-8">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">
+                      Typische Branchen
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700">
+                      Beispiele – wenn Sie nicht dabei sind, ist das in der
+                      Regel kein Problem.
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                    <MapPin className="h-4 w-4 text-sky-700" />
+                    Lokal & regional
+                  </div>
                 </div>
-                <Link
-                  href="#kontakt"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
-                >
-                  Erstgespräch starten <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </Reveal>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {kpis.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <Reveal key={item.label} delay={0.04 * index} y={22}>
-                    <div className="group flex h-full flex-col rounded-2xl border border-slate-300 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-1.5 hover:border-sky-500/80 hover:shadow-md">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="text-xs font-medium text-slate-700 sm:text-sm">
-                          {item.label}
-                        </p>
-                        <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 transition group-hover:bg-emerald-600 group-hover:text-white">
-                          <Icon className="h-5 w-5" />
-                        </div>
+                <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {industries.map((item, index) => (
+                    <Reveal key={item} delay={0.03 * index} y={18}>
+                      <div className="group flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white/90">
+                        <MapPin className="h-4 w-4 text-sky-700 transition group-hover:scale-110" />
+                        <span className="text-sm text-slate-900">{item}</span>
                       </div>
-                      <p className="mt-2 text-lg font-semibold text-slate-900 sm:text-xl">
-                        {item.value}
-                      </p>
-                      <p className="mt-2 text-xs text-slate-700 sm:text-sm">
-                        {item.detail}
-                      </p>
-                    </div>
-                  </Reveal>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
 
-        {/* Testimonials – Karussell (AUTO + Sterne) */}
-        <section className="relative px-4 py-10 sm:py-14" id="stimmen">
-          <div className="section-blob-wrapper">
-            <div className="section-blob section-blob--testimonials-1" />
-          </div>
-
-          <div className="relative z-10 mx-auto max-w-6xl">
-            <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Kundenstimmen.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
-                Wichtig ist, ob die Seite im Alltag hilft: weniger Rückfragen,
-                klarere Kontakte, bessere Planbarkeit.
-              </p>
-            </Reveal>
-
-            <div className="mt-8 relative">
+              {/* Testimonials */}
               <div
-                className="overflow-hidden rounded-3xl border border-slate-300 bg-slate-50/95 p-4 shadow-md"
+                className="rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md sm:p-8"
                 onMouseEnter={() => setIsTestimonialPaused(true)}
                 onMouseLeave={() => setIsTestimonialPaused(false)}
               >
-                <div
-                  className="flex transition-transform duration-700 ease-in-out"
-                  style={{
-                    transform: `translateX(-${activeTestimonial * 100}%)`,
-                  }}
-                >
-                  {testimonials.map((item) => (
-                    <div
-                      key={item.name}
-                      className="min-w-full px-1 py-2 sm:px-4 sm:py-4"
-                    >
-                      <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-sky-500/80 hover:shadow-md">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">
+                      Kundenstimmen
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700">
+                      Schwerpunkt: weniger Rückfragen, klarere Kontakte, bessere
+                      Planbarkeit.
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                    <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                    5.0
+              
+                  </div>
+                </div>
+
+                <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <div
+                    className="flex transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+                  >
+                    {testimonials.map((item) => (
+                      <div key={item.name} className="min-w-full p-5">
                         {/* Sterne */}
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-1">
@@ -1113,85 +779,269 @@ export default function Home() {
                           <p>{item.role}</p>
                         </div>
 
+                        {/* Grün = Ergebnis/Aktion */}
                         <p className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-emerald-700">
                           <BadgeCheck className="h-4 w-4" />
                           {item.result}
                         </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => {
-                        setActiveTestimonial(index);
-                        setIsTestimonialPaused(true);
-                        window.setTimeout(
-                          () => setIsTestimonialPaused(false),
-                          2500
-                        );
-                      }}
-                      className={`h-2.5 rounded-full transition ${
-                        activeTestimonial === index
-                          ? "w-7 bg-sky-600"
-                          : "w-2.5 bg-slate-300 hover:bg-slate-400"
-                      }`}
-                      aria-label={`Testimonial ${index + 1} anzeigen`}
-                    />
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="hidden text-xs text-slate-600 sm:inline">
+                <div className="mt-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    {testimonials.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => {
+                          setActiveTestimonial(index);
+                          setIsTestimonialPaused(true);
+                          window.setTimeout(() => setIsTestimonialPaused(false), 2500);
+                        }}
+                        className={`h-2.5 rounded-full transition ${
+                          activeTestimonial === index
+                            ? "w-7 bg-sky-600"
+                            : "w-2.5 bg-slate-300 hover:bg-slate-400"
+                        }`}
+                        aria-label={`Testimonial ${index + 1} anzeigen`}
+                      />
+                    ))}
+                  </div>
+
+                  <span className="text-xs text-slate-600">
                     {isTestimonialPaused ? "Pausiert" : "Automatisch"}
                   </span>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      prevTestimonial();
-                      setIsTestimonialPaused(true);
-                      window.setTimeout(
-                        () => setIsTestimonialPaused(false),
-                        2500
-                      );
-                    }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 bg-white text-xs text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-500 hover:text-sky-700"
-                    aria-label="Vorherige Referenz"
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      nextTestimonial();
-                      setIsTestimonialPaused(true);
-                      window.setTimeout(
-                        () => setIsTestimonialPaused(false),
-                        2500
-                      );
-                    }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 bg-white text-xs text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-500 hover:text-sky-700"
-                    aria-label="Nächste Referenz"
-                  >
-                    →
-                  </button>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* FAQ (Accordion) */}
-        <section className="relative px-4 py-10 sm:py-14" id="faq">
+        {/* Prozess – als Timeline + Zeiten integriert (CTA danach) */}
+        <section className="relative px-4 py-10 sm:py-14" id="ablauf">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--lower-1" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                So läuft die Zusammenarbeit ab.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
+                Ein klarer Ablauf mit kurzer Zeit bis zur ersten Version – damit
+                Sie zügig Feedback geben und wir schnell iterieren können.
+              </p>
+            </Reveal>
+
+            {/* Timeline */}
+            <div className="mt-8 rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md sm:p-8">
+              <div className="grid gap-5">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  const isLast = index === steps.length - 1;
+
+                  return (
+                    <Reveal key={step.title} delay={0.04 * index} y={24}>
+                      <div className="relative flex gap-4">
+                        {/* Linie */}
+                        <div className="flex flex-col items-center">
+                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-800">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          {!isLast && (
+                            <div className="mt-2 h-full w-px bg-slate-300" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
+                              {step.title}
+                            </h3>
+                            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 shadow-sm">
+                              Schritt {index + 1}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm text-slate-800">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+                    </Reveal>
+                  );
+                })}
+              </div>
+
+              {/* Zeiten/Meta direkt beim Ablauf */}
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {timelineMeta.map((m, idx) => {
+                  const Icon = m.icon;
+                  return (
+                    <Reveal key={m.label} delay={0.03 * idx} y={18}>
+                      <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <div className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-100 text-sky-800">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-slate-700">
+                            {m.label}
+                          </p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">
+                            {m.value}
+                          </p>
+                        </div>
+                      </div>
+                    </Reveal>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Erst hier: CTA zum Formular (Grün = Aktion) */}
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-emerald-300 bg-emerald-50/70 p-5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800">
+                  <BadgeCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Wenn der Ablauf passt: Erstgespräch anfragen
+                  </p>
+                  <p className="mt-1 text-sm text-slate-800">
+                    Sie nennen kurz Angebot und Ziel – wir melden uns mit einem
+                    konkreten Vorschlag für Struktur und Vorgehen.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href="#kontakt"
+                className="group inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500"
+              >
+                Erstgespräch anfragen
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Kontakt – Formular bewusst nach Prozess */}
+        <section
+          className="relative px-4 pb-12 pt-10 sm:pb-16 sm:pt-12"
+          id="kontakt"
+        >
           <div className="section-blob-wrapper">
             <div className="section-blob section-blob--lower-2" />
+          </div>
+
+          <div className="relative z-10">
+            <Reveal>
+              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-emerald-300 bg-slate-50 p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-emerald-200 sm:p-8">
+                <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-200/40 blur-3xl" />
+                <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-200/45 blur-3xl" />
+
+                <div className="relative">
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Erstgespräch anfragen.
+                  </h2>
+                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
+                    Erzählen Sie kurz, was Sie anbieten und was die Seite
+                    erreichen soll. Wir melden uns mit einem klaren Vorschlag
+                    für Struktur, Vorgehen und Investition.
+                  </p>
+
+                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-slate-800">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          required
+                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                          placeholder="Max Mustermann"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-slate-800">
+                          E-Mail
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                          placeholder="name@unternehmen.de"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-slate-800">
+                        Unternehmen / Branche
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                        placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-slate-800">
+                        Was soll Ihre Landing Page erreichen?
+                      </label>
+                      <textarea
+                        name="goal"
+                        required
+                        className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                        placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot …"
+                      />
+                    </div>
+
+                    {statusMessage && (
+                      <p
+                        className={`text-xs ${
+                          statusType === "success"
+                            ? "text-emerald-700"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {statusMessage}
+                      </p>
+                    )}
+
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {isSubmitting ? "Wird gesendet ..." : "Anfrage senden"}
+                      </button>
+                      <p className="text-xs text-slate-700">
+                        Keine Newsletter, kein Spam – wir melden uns persönlich.
+                      </p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* FAQ – CTA danach bewusst als „letzter Hinweis“ */}
+        <section className="relative px-4 py-10 sm:py-14" id="faq">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--mid-1" />
           </div>
 
           <div className="relative z-10 mx-auto max-w-4xl">
@@ -1223,7 +1073,7 @@ export default function Home() {
                         aria-expanded={isOpen}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition">
+                          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-800">
                             <Icon className="h-5 w-5" />
                           </div>
                           <span className="text-sm font-semibold text-slate-900 sm:text-base">
@@ -1250,10 +1100,11 @@ export default function Home() {
               })}
             </div>
 
+            {/* finaler Hinweis/CTA (Grün = Aktion) */}
             <div className="mt-8 flex justify-center">
               <Link
                 href="#kontakt"
-                className="group inline-flex items-center gap-2 rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/45 transition hover:-translate-y-0.5 hover:bg-sky-500"
+                className="group inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500"
               >
                 Fragen klären im Erstgespräch
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -1262,132 +1113,26 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Kontakt */}
-        <section
-          className="relative px-4 pb-12 pt-10 sm:pb-16 sm:pt-12"
-          id="kontakt"
-        >
-          <div className="section-blob-wrapper">
-            <div className="section-blob section-blob--contact-1" />
-            <div className="section-blob section-blob--contact-2" />
+        {/* Footer */}
+        <footer className="mx-auto mt-6 max-w-6xl px-4 pb-10 text-xs text-slate-600">
+          <div className="flex flex-col gap-2 border-t border-slate-300 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} Landex Digital. Alle Rechte vorbehalten.</p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="#vorteile" className="hover:text-slate-900">
+                Vorteile
+              </Link>
+              <Link href="#proof" className="hover:text-slate-900">
+                Proof
+              </Link>
+              <Link href="#ablauf" className="hover:text-slate-900">
+                Ablauf
+              </Link>
+              <Link href="#faq" className="hover:text-slate-900">
+                FAQ
+              </Link>
+            </div>
           </div>
-
-          <div className="relative z-10">
-            <Reveal>
-              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-sky-400 bg-slate-50 p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-sky-300 sm:p-8">
-                <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-200/60 blur-3xl" />
-                <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-200/50 blur-3xl" />
-
-                <div className="relative">
-                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Erstgespräch anfragen.
-                  </h2>
-                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
-                    Erzählen Sie kurz, was Sie anbieten und was die Seite
-                    erreichen soll. Wir melden uns mit einem klaren Vorschlag
-                    für Struktur, Vorgehen und Investition.
-                  </p>
-
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-medium text-slate-800">
-                          Name
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          required
-                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-sky-500"
-                          placeholder="Max Mustermann"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-medium text-slate-800">
-                          E-Mail
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          required
-                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
-                          placeholder="name@unternehmen.de"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-slate-800">
-                        Unternehmen / Branche
-                      </label>
-                      <input
-                        type="text"
-                        name="company"
-                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
-                        placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-slate-800">
-                        Was soll Ihre Landing Page erreichen?
-                      </label>
-                      <textarea
-                        name="goal"
-                        required
-                        className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 placeholder:text-slate-400"
-                        placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot …"
-                      />
-                    </div>
-
-                    {statusMessage && (
-                      <p
-                        className={`text-xs ${
-                          statusType === "success"
-                            ? "text-emerald-700"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {statusMessage}
-                      </p>
-                    )}
-
-                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="inline-flex items-center justify-center rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-600/45 transition hover:-translate-y-0.5 hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {isSubmitting ? "Wird gesendet ..." : "Anfrage senden"}
-                      </button>
-                      <p className="text-xs text-slate-700">
-                        Keine Newsletter, kein Spam – wir melden uns persönlich.
-                      </p>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </Reveal>
-
-            <footer className="mx-auto mt-8 flex max-w-6xl flex-col gap-2 border-t border-slate-300 pt-4 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                © {new Date().getFullYear()} Landex Digital. Alle Rechte
-                vorbehalten.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link href="#vorteile" className="hover:text-slate-900">
-                  Vorteile
-                </Link>
-                <Link href="#wie-wir-arbeiten" className="hover:text-slate-900">
-                  Prozess
-                </Link>
-                <Link href="#faq" className="hover:text-slate-900">
-                  FAQ
-                </Link>
-              </div>
-            </footer>
-          </div>
-        </section>
+        </footer>
       </div>
     </main>
   );

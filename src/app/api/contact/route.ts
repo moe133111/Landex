@@ -1,53 +1,65 @@
-// app/api/contact/route.ts
-import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+export const runtime = "nodejs";
 
-export async function POST(request: Request) {
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+
+export async function POST(req: Request) {
   try {
-    const { name, email, company, goal } = await request.json();
+    const { name, email, company, goal } = await req.json();
 
     if (!name || !email || !goal) {
       return NextResponse.json(
-        { error: "Fehlende Felder" },
+        { ok: false, error: "Pflichtfelder fehlen." },
         { status: 400 }
       );
     }
 
-    // Transporter mit SMTP-Daten aus Environment Variables
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,          // z. B. "smtp.strato.de"
-      port: Number(process.env.SMTP_PORT) || 465,
-      secure: process.env.SMTP_SECURE === "true", // meist "true" bei Port 465
-      auth: {
-        user: process.env.SMTP_USER,        // dein Login-User
-        pass: process.env.SMTP_PASS,        // dein Passwort / App-Passwort
-      },
-    });
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { ok: false, error: "RESEND_API_KEY fehlt." },
+        { status: 500 }
+      );
+    }
 
-    const mailText = `
-Es ist eine neue Anfrage über das Landing-Page-Formular eingegangen:
+    const resend = new Resend(apiKey);
 
-Name: ${name}
-E-Mail: ${email}
-Unternehmen / Branche: ${company || "-"}
-Ziel der Landing Page:
-${goal}
-    `.trim();
-
-    await transporter.sendMail({
-      from: `"Landingpage Formular" <${process.env.SMTP_USER}>`,
-      to: process.env.CONTACT_TO, // deine Zieladresse
+    const { data, error } = await resend.emails.send({
+      from: "Landex Digital <service@landex.digital>",
+      to: ["service@landex.digital"],
       replyTo: email,
-      subject: "Neue Anfrage über die Landing Page",
-      text: mailText,
+      subject: "Neue Anfrage über das Kontaktformular",
+      html: `
+        <h2>Neue Kontaktanfrage</h2>
+        <p><b>Name:</b> ${escapeHtml(name)}</p>
+        <p><b>E-Mail:</b> ${escapeHtml(email)}</p>
+        <p><b>Unternehmen:</b> ${escapeHtml(company || "-")}</p>
+        <p><b>Nachricht:</b><br/>${escapeHtml(goal).replace(/\n/g, "<br/>")}</p>
+      `,
     });
 
-    return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error("MAIL_ERROR", error);
+    if (error || !data?.id) {
+      return NextResponse.json(
+        { ok: false, error: error?.message || "Resend-Fehler" },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch (err) {
+    console.error("contact route error:", err);
     return NextResponse.json(
-      { error: "Fehler beim Senden der Nachricht" },
+      { ok: false, error: "Serverfehler" },
       { status: 500 }
     );
   }
+}
+
+function escapeHtml(input: string) {
+  return input
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
