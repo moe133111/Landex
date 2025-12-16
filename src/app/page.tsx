@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -11,6 +11,7 @@ import {
   CalendarCheck,
   ChevronDown,
   ChevronUp,
+  Eye,
   MapPin,
   MessageCircle,
   MousePointerClick,
@@ -22,6 +23,8 @@ import {
   Timer,
   Users,
   Wand2,
+  X,
+  SlidersHorizontal,
 } from "lucide-react";
 
 type StatusType = "success" | "error" | null;
@@ -140,6 +143,270 @@ const testimonials = [
   },
 ];
 
+function formatNumberDE(n: number) {
+  return new Intl.NumberFormat("de-DE").format(n);
+}
+
+/* ---------------- Cookie Banner (leichtgewichtig, nicht aufdringlich) ---------------- */
+
+type CookieConsent = {
+  necessary: true;
+  analytics: boolean;
+  marketing: boolean;
+  timestamp: string;
+  version: number;
+};
+
+const CONSENT_STORAGE_KEY = "cookie_consent_v1";
+const CONSENT_COOKIE_NAME = "cookie_consent_v1";
+const CONSENT_VERSION = 1;
+
+function setCookie(name: string, value: string, days = 180) {
+  if (typeof document === "undefined") return;
+  const maxAge = days * 24 * 60 * 60;
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+}
+
+function readStoredConsent(): CookieConsent | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(CONSENT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CookieConsent;
+    if (!parsed || parsed.version !== CONSENT_VERSION) return null;
+    if (parsed.necessary !== true) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function storeConsent(consent: CookieConsent) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(consent));
+  } catch {
+    // ignore
+  }
+  // Zusätzlich als Cookie (für serverseitige Auswertung, falls später benötigt)
+  setCookie(CONSENT_COOKIE_NAME, JSON.stringify(consent));
+}
+
+function CookieBanner() {
+  const [visible, setVisible] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
+
+  useEffect(() => {
+    const existing = readStoredConsent();
+    if (!existing) {
+      setVisible(true);
+      return;
+    }
+    // Falls gespeichert, UI-States spiegeln
+    setAnalytics(!!existing.analytics);
+    setMarketing(!!existing.marketing);
+    setVisible(false);
+  }, []);
+
+  function acceptAll() {
+    const consent: CookieConsent = {
+      necessary: true,
+      analytics: true,
+      marketing: true,
+      timestamp: new Date().toISOString(),
+      version: CONSENT_VERSION,
+    };
+    storeConsent(consent);
+    setAnalytics(true);
+    setMarketing(true);
+    setVisible(false);
+    setShowSettings(false);
+  }
+
+  function acceptNecessaryOnly() {
+    const consent: CookieConsent = {
+      necessary: true,
+      analytics: false,
+      marketing: false,
+      timestamp: new Date().toISOString(),
+      version: CONSENT_VERSION,
+    };
+    storeConsent(consent);
+    setAnalytics(false);
+    setMarketing(false);
+    setVisible(false);
+    setShowSettings(false);
+  }
+
+  function saveSettings() {
+    const consent: CookieConsent = {
+      necessary: true,
+      analytics: !!analytics,
+      marketing: !!marketing,
+      timestamp: new Date().toISOString(),
+      version: CONSENT_VERSION,
+    };
+    storeConsent(consent);
+    setVisible(false);
+    setShowSettings(false);
+  }
+
+  if (!visible) return null;
+
+  return (
+    <>
+      {/* Kompakter Banner unten */}
+      <div className="fixed inset-x-0 bottom-3 z-[60] px-3">
+        <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+              <SlidersHorizontal className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Cookies</p>
+              <p className="mt-1 text-xs text-slate-600">
+                Wir verwenden notwendige Cookies für die Funktionalität. Optionale Cookies (z. B. Analyse) nur mit Einwilligung.{" "}
+                <Link href="/legal/DSGVO" className="font-semibold text-slate-800 underline underline-offset-4 hover:text-slate-900">
+                  Datenschutz
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400"
+            >
+              Einstellungen
+            </button>
+            <button
+              type="button"
+              onClick={acceptNecessaryOnly}
+              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400"
+            >
+              Nur notwendig
+            </button>
+            <button
+              type="button"
+              onClick={acceptAll}
+              className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-600/30 transition hover:-translate-y-0.5 hover:bg-emerald-500"
+            >
+              Alle akzeptieren
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Settings Modal (minimal, nur wenn geöffnet) */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/35" onClick={() => setShowSettings(false)} />
+          <div className="relative w-full max-w-lg rounded-3xl border border-slate-300 bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Cookie-Einstellungen</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Notwendige Cookies sind immer aktiv. Optionale Kategorien können Sie hier steuern.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSettings(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50"
+                aria-label="Schließen"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Notwendig</p>
+                    <p className="mt-1 text-xs text-slate-600">Erforderlich für Grundfunktionen (z. B. Formular/Session).</p>
+                  </div>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                    aktiv
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Analyse (optional)</p>
+                    <p className="mt-1 text-xs text-slate-600">Hilft zu verstehen, welche Bereiche genutzt werden.</p>
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-800">
+                    <input
+                      type="checkbox"
+                      checked={analytics}
+                      onChange={() => setAnalytics((p) => !p)}
+                      className="h-4 w-4 accent-sky-600"
+                    />
+                    aktiv
+                  </label>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Marketing (optional)</p>
+                    <p className="mt-1 text-xs text-slate-600">Für personalisierte Inhalte/Remarketing (falls genutzt).</p>
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-800">
+                    <input
+                      type="checkbox"
+                      checked={marketing}
+                      onChange={() => setMarketing((p) => !p)}
+                      className="h-4 w-4 accent-sky-600"
+                    />
+                    aktiv
+                  </label>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600">
+                Details finden Sie in der{" "}
+                <Link href="/legal/DSGVO" className="font-semibold text-slate-800 underline underline-offset-4 hover:text-slate-900">
+                  Datenschutzerklärung
+                </Link>
+                .
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={acceptNecessaryOnly}
+                className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400"
+              >
+                Nur notwendig
+              </button>
+              <button
+                type="button"
+                onClick={saveSettings}
+                className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-600/30 transition hover:-translate-y-0.5 hover:bg-sky-500"
+              >
+                Speichern
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ---------------- Page ---------------- */
+
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -150,6 +417,28 @@ export default function Home() {
 
   // Autoplay / Pause-on-hover für Testimonials
   const [isTestimonialPaused, setIsTestimonialPaused] = useState(false);
+
+  // --- KPI Sektion: Count-Up on Scroll ---
+  const kpiSectionRef = useRef<HTMLDivElement | null>(null);
+  const [kpiHasStarted, setKpiHasStarted] = useState(false);
+  const [kpiValues, setKpiValues] = useState<{
+    projects: number;
+    years: number;
+    impressions: number;
+  }>({
+    projects: 0,
+    years: 0,
+    impressions: 0,
+  });
+
+  const kpiTargets = useMemo(
+    () => ({
+      projects: 55,
+      years: 6,
+      impressions: 200_000,
+    }),
+    []
+  );
 
   // Blau = Information, Grün = Aktion (Buttons/Form)
   const features: Feature[] = useMemo(
@@ -229,6 +518,60 @@ export default function Home() {
     return () => window.clearInterval(id);
   }, [isTestimonialPaused]);
 
+  // KPI: starten, wenn Sektion sichtbar ist (einmalig)
+  useEffect(() => {
+    if (kpiHasStarted) return;
+
+    const el = kpiSectionRef.current;
+    if (!el) return;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+
+        setKpiHasStarted(true);
+        observer.disconnect();
+
+        if (prefersReduced) {
+          setKpiValues({
+            projects: kpiTargets.projects,
+            years: kpiTargets.years,
+            impressions: kpiTargets.impressions,
+          });
+          return;
+        }
+
+        const start = performance.now();
+        const duration = 1200;
+
+        const animate = (now: number) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+
+          setKpiValues({
+            projects: Math.round(kpiTargets.projects * eased),
+            years: Math.round(kpiTargets.years * eased),
+            impressions: Math.round(kpiTargets.impressions * eased),
+          });
+
+          if (t < 1) requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [kpiHasStarted, kpiTargets]);
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -260,9 +603,7 @@ export default function Home() {
         form.reset();
       } else {
         setStatusType("error");
-        setStatusMessage(
-          "Es ist ein Fehler beim Senden der Nachricht aufgetreten."
-        );
+        setStatusMessage("Es ist ein Fehler beim Senden der Nachricht aufgetreten.");
       }
     } catch (error) {
       console.error(error);
@@ -275,6 +616,9 @@ export default function Home() {
 
   return (
     <main className="relative bg-slate-100 text-slate-900">
+      {/* Cookie Banner */}
+      <CookieBanner />
+
       {/* Globaler Hintergrund */}
       <div className="page-bg">
         <div className="page-bg-grid" />
@@ -518,11 +862,7 @@ export default function Home() {
             <Reveal>
               <div className="flex flex-col items-start gap-6">
                 <Link href="/" className="inline-flex items-center">
-                  <img
-                    src="/LandexDigital.svg"
-                    alt="Landex Digital"
-                    className="h-14 w-auto md:h-16"
-                  />
+                  <img src="/LandexDigital.svg" alt="Landex Digital" className="h-14 w-auto md:h-16" />
                 </Link>
 
                 {/* Blau = Information */}
@@ -544,8 +884,7 @@ export default function Home() {
 
             <Reveal delay={0.08}>
               <p className="mt-5 max-w-2xl text-balance text-base text-slate-800 sm:text-lg">
-                Wir bauen fokussierte Seiten mit klarer Führung, Vertrauen und
-                einem eindeutigen nächsten Schritt – damit Interessenten nicht
+                Wir bauen fokussierte Seiten mit klarer Führung, Vertrauen und einem eindeutigen nächsten Schritt – damit Interessenten nicht
                 suchen müssen, sondern handeln können.
               </p>
             </Reveal>
@@ -553,16 +892,11 @@ export default function Home() {
             {/* Nur Info-Link im Hero */}
             <Reveal delay={0.12}>
               <div className="mt-7 flex flex-wrap items-center gap-4">
-                <Link
-                  href="#vorteile"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
-                >
+                <Link href="#vorteile" className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 underline-offset-4 hover:underline">
                   Vorteile ansehen <ChevronDown className="h-4 w-4" />
                 </Link>
 
-                <span className="text-xs text-slate-600">
-                  Erstgespräch & Formular nach dem Ablauf (unten).
-                </span>
+                <span className="text-xs text-slate-600">Erstgespräch & Formular nach dem Ablauf (unten).</span>
               </div>
             </Reveal>
 
@@ -578,12 +912,8 @@ export default function Home() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">
-                            {item.title}
-                          </p>
-                          <p className="mt-1 text-sm text-slate-700">
-                            {item.description}
-                          </p>
+                          <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                          <p className="mt-1 text-sm text-slate-700">{item.description}</p>
                         </div>
                       </div>
                     </div>
@@ -604,12 +934,9 @@ export default function Home() {
             <Reveal>
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    So helfen wir Ihnen zu mehr Erfolg.
-                  </h2>
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">So helfen wir Ihnen zu mehr Erfolg.</h2>
                   <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
-                    Die Seite ist so aufgebaut, dass ein Interessent in kurzer
-                    Zeit alles Wichtige versteht – und den nächsten Schritt ohne
+                    Die Seite ist so aufgebaut, dass ein Interessent in kurzer Zeit alles Wichtige versteht – und den nächsten Schritt ohne
                     Zweifel geht.
                   </p>
                 </div>
@@ -636,19 +963,13 @@ export default function Home() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
-                            {feature.title}
-                          </h3>
-                          <p className="mt-1 text-sm text-slate-800">
-                            {feature.description}
-                          </p>
+                          <h3 className="text-sm font-semibold text-slate-900 sm:text-base">{feature.title}</h3>
+                          <p className="mt-1 text-sm text-slate-800">{feature.description}</p>
                         </div>
                       </div>
 
                       <div className="mt-2 flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
-                          Details beim Hover
-                        </span>
+                        <span className="text-xs text-slate-500">Details beim Hover</span>
                         <span className="inline-flex items-center gap-2 text-xs font-medium text-sky-800 opacity-80 transition group-hover:opacity-100">
                           <Sparkles className="h-4 w-4" />
                           Hinweis
@@ -666,6 +987,90 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Kennzahlen (Projekte / Jahre / Impressionen) */}
+        <section className="relative px-4 py-10 sm:py-14" id="kennzahlen">
+          <div className="section-blob-wrapper">
+            <div className="section-blob section-blob--mid-2" />
+          </div>
+
+          <div ref={kpiSectionRef} className="relative z-10 mx-auto max-w-6xl">
+            <Reveal>
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Projekte, Erfahrung, Reichweite.</h2>
+                  <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
+                    Kennzahlen als Orientierung – für Größe, Routine und die Menge an gesammelten Praxiseindrücken aus echten Projekten.
+                  </p>
+                </div>
+
+                <div className="text-xs text-slate-700 sm:text-sm" />
+              </div>
+            </Reveal>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              <Reveal delay={0.03} y={22}>
+                <div className="group rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
+                      <Rocket className="h-5 w-5" />
+                    </div>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                      Projekte
+                    </span>
+                  </div>
+
+                  <div className="mt-5">
+                    <p className="text-4xl font-semibold tracking-tight text-slate-900">{formatNumberDE(kpiValues.projects)}+</p>
+                    <p className="mt-2 text-sm text-slate-800">
+                      Umgesetzt – von klaren Angebotsseiten bis zu kampagnenfähigen Funnels.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.06} y={22}>
+                <div className="group rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
+                      <Timer className="h-5 w-5" />
+                    </div>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                      Erfahrung
+                    </span>
+                  </div>
+
+                  <div className="mt-5">
+                    <p className="text-4xl font-semibold tracking-tight text-slate-900">{formatNumberDE(kpiValues.years)}+</p>
+                    <p className="mt-2 text-sm text-slate-800">
+                      Jahre – mit Fokus auf Struktur, Copy und Conversion im lokalen Umfeld.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.09} y={22}>
+                <div className="group rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white hover:shadow-lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-800 transition group-hover:bg-sky-600 group-hover:text-white">
+                      <Eye className="h-5 w-5" />
+                    </div>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
+                      Impressionen
+                    </span>
+                  </div>
+
+                  <div className="mt-5">
+                    <p className="text-4xl font-semibold tracking-tight text-slate-900">
+                      {formatNumberDE(kpiValues.impressions)}+
+                    </p>
+                    <p className="mt-2 text-sm text-slate-800">Gesammelte Sichtkontakte über Projekte und Kampagnen.</p>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         {/* Proof – Branchen + Kundenstimmen zusammengeführt */}
         <section className="relative px-4 py-10 sm:py-14" id="proof">
           <div className="section-blob-wrapper">
@@ -674,14 +1079,11 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-6xl">
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Für lokale Unternehmen gemacht – und im Alltag bewährt.
-              </h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Für lokale Unternehmen gemacht – und im Alltag bewährt.</h2>
             </Reveal>
             <Reveal delay={0.05}>
               <p className="mt-3 max-w-3xl text-sm text-slate-800 sm:text-base">
-                Verständliche Sprache, klare Struktur und schnelle Kontaktwege –
-                damit Interessenten sofort wissen, ob Ihr Angebot passt.
+                Verständliche Sprache, klare Struktur und schnelle Kontaktwege – damit Interessenten sofort wissen, ob Ihr Angebot passt.
               </p>
             </Reveal>
 
@@ -690,12 +1092,9 @@ export default function Home() {
               <div className="rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md sm:p-8">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      Typische Branchen
-                    </p>
+                    <p className="text-sm font-semibold text-slate-900">Typische Branchen</p>
                     <p className="mt-1 text-sm text-slate-700">
-                      Beispiele – wenn Sie nicht dabei sind, ist das in der
-                      Regel kein Problem.
+                      Beispiele – wenn Sie nicht dabei sind, ist das in der Regel kein Problem.
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
@@ -724,18 +1123,14 @@ export default function Home() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      Kundenstimmen
-                    </p>
+                    <p className="text-sm font-semibold text-slate-900">Kundenstimmen</p>
                     <p className="mt-1 text-sm text-slate-700">
-                      Schwerpunkt: weniger Rückfragen, klarere Kontakte, bessere
-                      Planbarkeit.
+                      Schwerpunkt: weniger Rückfragen, klarere Kontakte, bessere Planbarkeit.
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm">
                     <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
                     5.0
-              
                   </div>
                 </div>
 
@@ -746,7 +1141,6 @@ export default function Home() {
                   >
                     {testimonials.map((item) => (
                       <div key={item.name} className="min-w-full p-5">
-                        {/* Sterne */}
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-1">
                             {Array.from({ length: 5 }).map((_, idx) => {
@@ -754,32 +1148,21 @@ export default function Home() {
                               return (
                                 <Star
                                   key={idx}
-                                  className={`h-4 w-4 ${
-                                    filled
-                                      ? "fill-amber-400 text-amber-400"
-                                      : "text-slate-300"
-                                  }`}
+                                  className={`h-4 w-4 ${filled ? "fill-amber-400 text-amber-400" : "text-slate-300"}`}
                                 />
                               );
                             })}
                           </div>
-                          <span className="text-xs text-slate-600">
-                            {item.rating}/5
-                          </span>
+                          <span className="text-xs text-slate-600">{item.rating}/5</span>
                         </div>
 
-                        <p className="mt-4 text-sm text-slate-800 leading-relaxed">
-                          „{item.quote}“
-                        </p>
+                        <p className="mt-4 text-sm text-slate-800 leading-relaxed">„{item.quote}“</p>
 
                         <div className="mt-4 text-xs text-slate-700">
-                          <p className="font-semibold text-slate-900">
-                            {item.name}
-                          </p>
+                          <p className="font-semibold text-slate-900">{item.name}</p>
                           <p>{item.role}</p>
                         </div>
 
-                        {/* Grün = Ergebnis/Aktion */}
                         <p className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-emerald-700">
                           <BadgeCheck className="h-4 w-4" />
                           {item.result}
@@ -801,18 +1184,14 @@ export default function Home() {
                           window.setTimeout(() => setIsTestimonialPaused(false), 2500);
                         }}
                         className={`h-2.5 rounded-full transition ${
-                          activeTestimonial === index
-                            ? "w-7 bg-sky-600"
-                            : "w-2.5 bg-slate-300 hover:bg-slate-400"
+                          activeTestimonial === index ? "w-7 bg-sky-600" : "w-2.5 bg-slate-300 hover:bg-slate-400"
                         }`}
                         aria-label={`Testimonial ${index + 1} anzeigen`}
                       />
                     ))}
                   </div>
 
-                  <span className="text-xs text-slate-600">
-                    {isTestimonialPaused ? "Pausiert" : "Automatisch"}
-                  </span>
+                  <span className="text-xs text-slate-600">{isTestimonialPaused ? "Pausiert" : "Automatisch"}</span>
                 </div>
               </div>
             </div>
@@ -827,18 +1206,14 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-6xl">
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                So läuft die Zusammenarbeit ab.
-              </h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">So läuft die Zusammenarbeit ab.</h2>
             </Reveal>
             <Reveal delay={0.05}>
               <p className="mt-3 max-w-2xl text-sm text-slate-800 sm:text-base">
-                Ein klarer Ablauf mit kurzer Zeit bis zur ersten Version – damit
-                Sie zügig Feedback geben und wir schnell iterieren können.
+                Ein klarer Ablauf mit kurzer Zeit bis zur ersten Version – damit Sie zügig Feedback geben und wir schnell iterieren können.
               </p>
             </Reveal>
 
-            {/* Timeline */}
             <div className="mt-8 rounded-3xl border border-slate-300 bg-slate-50/95 p-6 shadow-md sm:p-8">
               <div className="grid gap-5">
                 {steps.map((step, index) => {
@@ -848,28 +1223,21 @@ export default function Home() {
                   return (
                     <Reveal key={step.title} delay={0.04 * index} y={24}>
                       <div className="relative flex gap-4">
-                        {/* Linie */}
                         <div className="flex flex-col items-center">
                           <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-800">
                             <Icon className="h-5 w-5" />
                           </div>
-                          {!isLast && (
-                            <div className="mt-2 h-full w-px bg-slate-300" />
-                          )}
+                          {!isLast && <div className="mt-2 h-full w-px bg-slate-300" />}
                         </div>
 
                         <div className="flex-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                           <div className="flex items-start justify-between gap-3">
-                            <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
-                              {step.title}
-                            </h3>
+                            <h3 className="text-sm font-semibold text-slate-900 sm:text-base">{step.title}</h3>
                             <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 shadow-sm">
                               Schritt {index + 1}
                             </span>
                           </div>
-                          <p className="mt-2 text-sm text-slate-800">
-                            {step.description}
-                          </p>
+                          <p className="mt-2 text-sm text-slate-800">{step.description}</p>
                         </div>
                       </div>
                     </Reveal>
@@ -877,7 +1245,6 @@ export default function Home() {
                 })}
               </div>
 
-              {/* Zeiten/Meta direkt beim Ablauf */}
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
                 {timelineMeta.map((m, idx) => {
                   const Icon = m.icon;
@@ -888,12 +1255,8 @@ export default function Home() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-700">
-                            {m.label}
-                          </p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
-                            {m.value}
-                          </p>
+                          <p className="text-xs font-medium text-slate-700">{m.label}</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-900">{m.value}</p>
                         </div>
                       </div>
                     </Reveal>
@@ -901,137 +1264,122 @@ export default function Home() {
                 })}
               </div>
             </div>
-
-            {/* Erst hier: CTA zum Formular (Grün = Aktion) */}
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-emerald-300 bg-emerald-50/70 p-5 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800">
-                  <BadgeCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    Wenn der Ablauf passt: Erstgespräch anfragen
-                  </p>
-                  <p className="mt-1 text-sm text-slate-800">
-                    Sie nennen kurz Angebot und Ziel – wir melden uns mit einem
-                    konkreten Vorschlag für Struktur und Vorgehen.
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                href="#kontakt"
-                className="group inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500"
-              >
-                Erstgespräch anfragen
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-            </div>
           </div>
         </section>
 
         {/* Kontakt – Formular bewusst nach Prozess */}
-        <section
-          className="relative px-4 pb-12 pt-10 sm:pb-16 sm:pt-12"
-          id="kontakt"
-        >
+        <section className="relative px-4 pb-12 pt-10 sm:pb-16 sm:pt-12" id="kontakt">
           <div className="section-blob-wrapper">
             <div className="section-blob section-blob--lower-2" />
           </div>
 
           <div className="relative z-10">
             <Reveal>
-              <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-emerald-300 bg-slate-50 p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-emerald-200 sm:p-8">
+              <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-emerald-300 bg-slate-50 p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-emerald-200 sm:p-8">
                 <div className="pointer-events-none absolute -left-24 top-0 h-48 w-48 rounded-full bg-sky-200/40 blur-3xl" />
                 <div className="pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full bg-emerald-200/45 blur-3xl" />
 
-                <div className="relative">
-                  <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Erstgespräch anfragen.
-                  </h2>
-                  <p className="mt-3 text-sm text-slate-800 sm:text-base">
-                    Erzählen Sie kurz, was Sie anbieten und was die Seite
-                    erreichen soll. Wir melden uns mit einem klaren Vorschlag
-                    für Struktur, Vorgehen und Investition.
-                  </p>
+                <div className="relative grid gap-8 lg:grid-cols-2 lg:items-start">
+                  <div>
+                    <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Erstgespräch anfragen.</h2>
+                    <p className="mt-3 text-sm text-slate-800 sm:text-base">
+                      Erzählen Sie kurz, was Sie anbieten und was die Seite erreichen soll. Wir melden uns mit einem klaren Vorschlag für
+                      Struktur, Vorgehen und Investition.
+                    </p>
 
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800">
+                          <BadgeCheck className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Kurzer nächster Schritt</p>
+                          <p className="mt-1 text-sm text-slate-800">
+                            Formular ausfüllen (1–2 Minuten) – danach klären wir im Erstgespräch die wichtigsten Punkte und machen den nächsten
+                            Schritt konkret.
+                          </p>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-xs text-slate-700">
+                              <MessageCircle className="h-4 w-4 text-emerald-700" />
+                              20–30 Minuten Gespräch
+                            </div>
+                            <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-xs text-slate-700">
+                              <CalendarCheck className="h-4 w-4 text-emerald-700" />
+                              Klarer Vorschlag statt Vage
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="mt-5 text-xs text-slate-700">Keine Newsletter, kein Spam – wir melden uns persönlich.</p>
+                  </div>
+
+                  <div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                          <label className="block text-xs font-medium text-slate-800">Name</label>
+                          <input
+                            type="text"
+                            name="name"
+                            required
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                            placeholder="Max Mustermann"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="block text-xs font-medium text-slate-800">E-Mail</label>
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                            placeholder="name@unternehmen.de"
+                          />
+                        </div>
+                      </div>
+
                       <div className="space-y-1.5">
-                        <label className="block text-xs font-medium text-slate-800">
-                          Name
-                        </label>
+                        <label className="block text-xs font-medium text-slate-800">Unternehmen / Branche</label>
                         <input
                           type="text"
-                          name="name"
-                          required
+                          name="company"
                           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
-                          placeholder="Max Mustermann"
+                          placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
                         />
                       </div>
+
                       <div className="space-y-1.5">
-                        <label className="block text-xs font-medium text-slate-800">
-                          E-Mail
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
+                        <label className="block text-xs font-medium text-slate-800">Was soll Ihre Landing Page erreichen?</label>
+                        <textarea
+                          name="goal"
                           required
-                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
-                          placeholder="name@unternehmen.de"
+                          className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+                          placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot …"
                         />
                       </div>
-                    </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-slate-800">
-                        Unternehmen / Branche
-                      </label>
-                      <input
-                        type="text"
-                        name="company"
-                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
-                        placeholder="z. B. Friseursalon, Restaurant, Praxis, Coaching …"
-                      />
-                    </div>
+                      {statusMessage && (
+                        <p className={`text-xs ${statusType === "success" ? "text-emerald-700" : "text-red-600"}`}>{statusMessage}</p>
+                      )}
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-slate-800">
-                        Was soll Ihre Landing Page erreichen?
-                      </label>
-                      <textarea
-                        name="goal"
-                        required
-                        className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
-                        placeholder="z. B. mehr Terminanfragen, mehr Online-Buchungen, konkrete Aktion zu einem Angebot …"
-                      />
-                    </div>
+                      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {isSubmitting ? "Wird gesendet ..." : "Anfrage senden"}
+                        </button>
 
-                    {statusMessage && (
-                      <p
-                        className={`text-xs ${
-                          statusType === "success"
-                            ? "text-emerald-700"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {statusMessage}
-                      </p>
-                    )}
-
-                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/40 transition hover:-translate-y-0.5 hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {isSubmitting ? "Wird gesendet ..." : "Anfrage senden"}
-                      </button>
-                      <p className="text-xs text-slate-700">
-                        Keine Newsletter, kein Spam – wir melden uns persönlich.
-                      </p>
-                    </div>
-                  </form>
+                        <span className="inline-flex items-center gap-2 text-xs text-slate-700">
+                          <ArrowUpRight className="h-4 w-4 text-emerald-700" />
+                          Wir melden uns zeitnah zurück.
+                        </span>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </Reveal>
@@ -1046,14 +1394,10 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto max-w-4xl">
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Häufige Fragen.
-              </h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Häufige Fragen.</h2>
             </Reveal>
             <Reveal delay={0.05}>
-              <p className="mt-3 text-sm text-slate-800 sm:text-base">
-                Kurz beantwortet – die Details klären wir im Gespräch.
-              </p>
+              <p className="mt-3 text-sm text-slate-800 sm:text-base">Kurz beantwortet – die Details klären wir im Gespräch.</p>
             </Reveal>
 
             <div className="mt-6 space-y-4">
@@ -1066,9 +1410,7 @@ export default function Home() {
                     <div className="rounded-2xl border border-slate-300 bg-slate-50 shadow-md transition hover:-translate-y-1 hover:border-sky-500/80 hover:bg-white">
                       <button
                         type="button"
-                        onClick={() =>
-                          setOpenFaq((prev) => (prev === index ? null : index))
-                        }
+                        onClick={() => setOpenFaq((prev) => (prev === index ? null : index))}
                         className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
                         aria-expanded={isOpen}
                       >
@@ -1076,16 +1418,10 @@ export default function Home() {
                           <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-800">
                             <Icon className="h-5 w-5" />
                           </div>
-                          <span className="text-sm font-semibold text-slate-900 sm:text-base">
-                            {item.question}
-                          </span>
+                          <span className="text-sm font-semibold text-slate-900 sm:text-base">{item.question}</span>
                         </div>
                         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm">
-                          {isOpen ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
+                          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </span>
                       </button>
 
@@ -1100,7 +1436,6 @@ export default function Home() {
               })}
             </div>
 
-            {/* finaler Hinweis/CTA (Grün = Aktion) */}
             <div className="mt-8 flex justify-center">
               <Link
                 href="#kontakt"
@@ -1115,11 +1450,16 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mx-auto mt-6 max-w-6xl px-4 pb-10 text-xs text-slate-600">
-          <div className="flex flex-col gap-2 border-t border-slate-300 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-slate-300 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} Landex Digital. Alle Rechte vorbehalten.</p>
+
+            {/* Navigationslinks + Legal */}
             <div className="flex flex-wrap gap-4">
               <Link href="#vorteile" className="hover:text-slate-900">
                 Vorteile
+              </Link>
+              <Link href="#kennzahlen" className="hover:text-slate-900">
+                Kennzahlen
               </Link>
               <Link href="#proof" className="hover:text-slate-900">
                 Proof
@@ -1130,6 +1470,16 @@ export default function Home() {
               <Link href="#faq" className="hover:text-slate-900">
                 FAQ
               </Link>
+              <span className="mx-1 hidden text-slate-400 sm:inline">|</span>
+              <Link href="/legal/AGB" className="hover:text-slate-900">
+                AGB
+              </Link>
+              <Link href="/legal/DSGVO" className="hover:text-slate-900">
+                Datenschutz
+              </Link>
+              <Link href="/legal/Impressum" className="hover:text-slate-900">
+                Impressum
+              </Link>
             </div>
           </div>
         </footer>
@@ -1137,3 +1487,4 @@ export default function Home() {
     </main>
   );
 }
+
