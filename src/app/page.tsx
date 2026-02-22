@@ -686,7 +686,7 @@ export default function Home() {
               <p className="mt-3 max-w-2xl text-slate-600">Die Seite ist so aufgebaut, dass ein Interessent in kurzer Zeit alles Wichtige versteht – und den nächsten Schritt ohne Zweifel geht.</p>
             </Reveal>
             <div className="mt-10 grid gap-4 md:grid-cols-3 md:grid-rows-2">
-              <Reveal delay={0.04} y={28} className="md:col-span-2">
+              <div className="md:col-span-2"><Reveal delay={0.04} y={28}>
                 <TiltCard>
                   {(() => { const Icon = features[0].icon; return (
                     <div className="group relative h-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8">
@@ -702,8 +702,8 @@ export default function Home() {
                     </div>
                   ); })()}
                 </TiltCard>
-              </Reveal>
-              <Reveal delay={0.07} y={28} className="md:col-start-3 md:row-span-2">
+              </Reveal></div>
+              <div className="md:col-start-3 md:row-span-2"><Reveal delay={0.07} y={28}>
                 <TiltCard className="h-full">
                   {(() => { const Icon = features[1].icon; return (
                     <div className="group relative h-full overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-b from-slate-900 to-slate-800 p-6 shadow-lg sm:p-8">
@@ -719,8 +719,8 @@ export default function Home() {
                     </div>
                   ); })()}
                 </TiltCard>
-              </Reveal>
-              <Reveal delay={0.1} y={28} className="md:col-span-2">
+              </Reveal></div>
+              <div className="md:col-span-2"><Reveal delay={0.1} y={28}>
                 <TiltCard>
                   {(() => { const Icon = features[2].icon; return (
                     <div className="group relative h-full overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-6 shadow-lg sm:p-8">
@@ -736,7 +736,7 @@ export default function Home() {
                     </div>
                   ); })()}
                 </TiltCard>
-              </Reveal>
+              </Reveal></div>
             </div>
           </div>
         </section>
