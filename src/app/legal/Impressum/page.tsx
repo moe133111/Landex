@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Impressum | Landex Digital",
+  title: "Impressum | Gellert & Ali Consulting",
   robots: { index: true, follow: true },
 };
 
@@ -24,7 +24,7 @@ export default function ImpressumPage() {
           <h2 className="font-semibold text-slate-900 mb-4">Anbieter</h2>
           <div className="text-sm leading-relaxed text-slate-900">
             <p className="font-semibold">
-              Landex Digital UG (haftungsbeschränkt)
+              Gellert & Ali Consulting GbR
             </p>
             <p>Arnold-Zweig-Straße 34</p>
             <p>13189 Berlin</p>
@@ -34,10 +34,10 @@ export default function ImpressumPage() {
         {/* Vertretung & Kontakt */}
         <div className="rounded-2xl border border-slate-300 bg-slate-50 p-6">
           <h2 className="font-semibold text-slate-900 mb-4">
-            Vertretungsberechtigte Person
+            Vertretungsberechtigte Personen
           </h2>
           <div className="text-sm leading-relaxed text-slate-900">
-            <p>Vertreten durch: <span className="font-semibold">Moritz Gellert</span></p>
+            <p>Vertreten durch: <span className="font-semibold">Moritz Gellert &amp; Saman Ali</span></p>
             <p className="mt-3">
               E-Mail:{" "}
               <a
@@ -60,10 +60,10 @@ export default function ImpressumPage() {
           </h2>
           <div className="text-sm leading-relaxed text-slate-900">
             <p>
-              Rechtsform: Unternehmergesellschaft (haftungsbeschränkt)
+              Rechtsform: Gesellschaft bürgerlichen Rechts (GbR)
             </p>
             <p className="mt-3 text-xs text-slate-600">
-              Handelsregistereintrag und Registernummer werden nach Eintragung ergänzt.
+              Eintragung im Gesellschaftsregister wird nach Eintragung ergänzt.
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function ImpressumPage() {
             Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
           </h2>
           <div className="text-sm leading-relaxed text-slate-900">
-            <p>Moritz Gellert</p>
+            <p>Moritz Gellert &amp; Saman Ali</p>
             <p>Arnold-Zweig-Straße 34</p>
             <p>13189 Berlin</p>
           </div>

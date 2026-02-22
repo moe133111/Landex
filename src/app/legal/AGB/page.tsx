@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AGB | Landex Digital",
+  title: "AGB | Gellert & Ali Consulting",
   robots: { index: true, follow: true },
 };
 
@@ -23,12 +23,12 @@ export default function AGBPage() {
         <div className="rounded-2xl border border-slate-300 bg-slate-50 p-6">
           <h2 className="text-base font-semibold text-slate-900">Anbieter</h2>
           <div className="mt-4 text-sm text-slate-900 leading-relaxed">
-            <p className="font-semibold">Landex Digital UG (haftungsbeschränkt)</p>
+            <p className="font-semibold">Gellert & Ali Consulting GbR</p>
             <p>Arnold-Zweig-Straße 34</p>
             <p>13189 Berlin</p>
 
             <p className="mt-4">
-              Vertreten durch: Moritz Gellert
+              Vertreten durch: Moritz Gellert &amp; Saman Ali
               <br />
               E-Mail:{" "}
               <a
@@ -50,7 +50,7 @@ export default function AGBPage() {
           <h2 className="font-semibold text-slate-900">1. Geltungsbereich</h2>
           <p>
             (1) Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle
-            Verträge zwischen der Landex Digital UG (haftungsbeschränkt),
+            Verträge zwischen der Gellert & Ali Consulting GbR,
             Arnold-Zweig-Straße 34, 13189 Berlin, E-Mail: service@landex.digital –
             nachfolgend „Anbieter“ – und ihren Kunden – nachfolgend „Kunde“.
           </p>
