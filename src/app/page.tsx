@@ -10,6 +10,7 @@ import {
   Palette, Phone, Rocket, Sparkles, Star, Target, Timer, TrendingUp,
   Users, Wand2, X, SlidersHorizontal, Zap, Clock, ThumbsUp, Globe,
 } from "lucide-react";
+import { FaqJsonLd } from "./components/JsonLd";
 
 type StatusType = "success" | "error" | null;
 type Feature = { title: string; description: string; hoverHint: string; icon: React.ComponentType<{ className?: string }>; };
@@ -598,7 +599,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto max-w-6xl">
           <Reveal>
             <Link href="/" className="inline-flex items-center">
-              <img src="/LandexDigital.svg" alt="Landex Digital" className="h-14 w-auto md:h-16" style={{ filter: "brightness(0) invert(1)" }} />
+              <img src="/LandexDigital.svg" alt="Landex Digital Logo – Webdesigner für Landing Pages" className="h-14 w-auto md:h-16" style={{ filter: "brightness(0) invert(1)" }} />
             </Link>
           </Reveal>
           <Reveal delay={0.04}>
@@ -608,7 +609,7 @@ export default function Home() {
           </Reveal>
           <Reveal delay={0.07}>
             <h1 className="mt-6 max-w-5xl text-balance text-5xl font-black tracking-tighter text-white sm:text-6xl lg:text-8xl xl:text-[88px]">
-              Landing Pages, <span className="gradient-shimmer">die Besucher</span> in Anfragen verwandeln.
+              Ihr Webdesigner für Landing Pages, <span className="gradient-shimmer">die Besucher</span> in Anfragen verwandeln.
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
@@ -617,6 +618,9 @@ export default function Home() {
             </p>
             <p className="mt-3 text-lg font-semibold text-emerald-400 sm:text-xl">
               Perfekt {typedText}<span className="typed-cursor" />
+            </p>
+            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-slate-500">
+              Landex Digital ist ein spezialisierter Webdesigner für Landing Pages. Wir entwickeln fokussierte Seiten für lokale Unternehmen – von Friseursalons über Physiotherapien bis zu Restaurants. Unser Ansatz: Strategie, Copywriting, Design und Code aus einer Hand, ohne Baukasten, ohne Templates. Das Ergebnis sind Landing Pages mit klarer Botschaft, Vertrauenselementen und einem eindeutigen Call-to-Action.
             </p>
           </Reveal>
           <Reveal delay={0.13}>
@@ -682,7 +686,7 @@ export default function Home() {
           <div className="lblob-wrapper"><div className="lblob lblob-sky" style={{ width: 380, height: 380, top: -140, right: -140 }} /></div>
           <div className="relative z-10 mx-auto max-w-6xl">
             <Reveal>
-              <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">So helfen wir Ihnen zu mehr Erfolg.</h2>
+              <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">So erstellt Ihr Webdesigner Landing Pages, die wirken.</h2>
               <p className="mt-3 max-w-2xl text-slate-600">Die Seite ist so aufgebaut, dass ein Interessent in kurzer Zeit alles Wichtige versteht – und den nächsten Schritt ohne Zweifel geht.</p>
             </Reveal>
             <div className="mt-10 grid gap-4 md:grid-cols-3 md:grid-rows-2">
@@ -785,6 +789,11 @@ export default function Home() {
                 );
               })}
             </div>
+            <Reveal delay={0.15}>
+              <p className="mt-8 max-w-3xl text-sm leading-relaxed text-slate-500">
+                Mit über 55 umgesetzten Projekten und 6 Jahren Erfahrung im Webdesign für lokale Unternehmen hat Landex Digital mehr als 200.000 Impressionen über Kampagnen und Landing Pages gesammelt.
+              </p>
+            </Reveal>
           </div>
         </section>
 
@@ -795,8 +804,11 @@ export default function Home() {
             <div className="lblob lblob-blue" style={{ width: 300, height: 300, bottom: -80, left: -80 }} />
           </div>
           <div className="relative z-10 mx-auto max-w-6xl">
-            <Reveal><h2 className="text-3xl font-black tracking-tight sm:text-4xl">Für lokale Unternehmen gemacht – und im Alltag bewährt.</h2></Reveal>
-            <Reveal delay={0.05}><p className="mt-3 max-w-3xl text-slate-600">Verständliche Sprache, klare Struktur und schnelle Kontaktwege – damit Interessenten sofort wissen, ob Ihr Angebot passt.</p></Reveal>
+            <Reveal><h2 className="text-3xl font-black tracking-tight sm:text-4xl">Landing Pages für lokale Unternehmen – im Alltag bewährt.</h2></Reveal>
+            <Reveal delay={0.05}>
+              <p className="mt-3 max-w-3xl text-slate-600">Verständliche Sprache, klare Struktur und schnelle Kontaktwege – damit Interessenten sofort wissen, ob Ihr Angebot passt.</p>
+              <p className="mt-2 max-w-3xl text-sm text-slate-500">Unsere Landing Pages sind optimiert für lokale Branchen: Restaurants &amp; Cafés, Friseure &amp; Barbiere, Kosmetikstudios, Physiotherapie- &amp; Heilpraxen, Coaches &amp; Berater, Personal Trainer, Handwerksbetriebe und weitere lokale Dienstleister.</p>
+            </Reveal>
 
             <div className="mt-10 grid gap-6 lg:grid-cols-2">
 
@@ -913,7 +925,7 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 mb-3">
                     <Zap className="h-3.5 w-3.5" />Interaktiver Vergleich
                   </div>
-                  <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Der Unterschied ist sichtbar.</h2>
+                  <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Webdesign-Vergleich: Vorher vs. Landex Digital.</h2>
                 </div>
                 <p className="text-sm text-slate-500 sm:text-right">← Regler ziehen zum Vergleichen</p>
               </div>
@@ -954,7 +966,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 mb-3">
                 <Clock className="h-3.5 w-3.5" />Klarer Prozess
               </div>
-              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">So läuft die Zusammenarbeit ab.</h2>
+              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">In 4 Schritten zur fertigen Landing Page.</h2>
             </Reveal>
             <Reveal delay={0.05}><p className="mt-3 max-w-2xl text-slate-600">Ein klarer Ablauf mit kurzer Zeit bis zur ersten Version – damit Sie zügig Feedback geben und wir schnell iterieren können.</p></Reveal>
 
@@ -1095,6 +1107,7 @@ export default function Home() {
 
         {/* ══ FAQ ════════════════════════════════════════════════════════ */}
         <section className="relative px-4 py-16 sm:py-20" id="faq">
+          <FaqJsonLd />
           <div className="lblob-wrapper"><div className="lblob lblob-sky" style={{ width: 340, height: 340, top: -80, right: -80 }} /></div>
           <div className="relative z-10 mx-auto max-w-4xl">
             <Reveal>
