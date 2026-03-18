@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -16,16 +16,31 @@ export function Reveal({ children, delay = 0, y = 24 }: RevealProps) {
     once: true,
     margin: "0px 0px -80px 0px",
   });
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  // SSR & pre-hydration: fully visible (opacity 1, no transform)
+  // After hydration: start hidden, animate in on scroll
+  const shouldAnimate = hydrated;
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      initial={false}
+      animate={
+        !shouldAnimate
+          ? { opacity: 1, y: 0 }
+          : isInView
+            ? { opacity: 1, y: 0 }
+            : { opacity: 0, y }
+      }
       transition={{
         duration: 0.6,
         ease: [0.22, 0.61, 0.36, 1],
-        delay,
+        delay: shouldAnimate && isInView ? delay : 0,
       }}
     >
       {children}

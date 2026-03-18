@@ -439,7 +439,8 @@ export default function Home() {
 
   const kpiSectionRef = useRef<HTMLDivElement>(null);
   const [kpiHasStarted, setKpiHasStarted] = useState(false);
-  const [kpiValues, setKpiValues] = useState({ projects: 0, years: 0, impressions: 0 });
+  const [kpiValues, setKpiValues] = useState({ projects: 55, years: 6, impressions: 200_000 });
+  const [kpiReady, setKpiReady] = useState(false);
 
   const heroRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -474,6 +475,8 @@ export default function Home() {
   }, [isTestimonialPaused]);
 
   useEffect(() => {
+    // Reset to 0 after hydration so the count-up animation can play
+    if (!kpiReady) { setKpiValues({ projects: 0, years: 0, impressions: 0 }); setKpiReady(true); return; }
     if (kpiHasStarted) return;
     const el = kpiSectionRef.current; if (!el) return;
     const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -492,7 +495,7 @@ export default function Home() {
     }, { threshold: 0.35 });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [kpiHasStarted, kpiTargets]);
+  }, [kpiHasStarted, kpiReady, kpiTargets]);
 
   useEffect(() => {
     const el = timelineRef.current; if (!el) return;
